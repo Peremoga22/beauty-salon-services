@@ -1,0 +1,99 @@
+﻿@page "/admin-users"
+@inject IJSRuntime JSRuntime
+@attribute [Authorize(Roles = "Admin")]
+@layout AdminLayout
+@using Microsoft.AspNetCore.Identity
+@inject RoleManager<IdentityRole> _RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<AppUser> UserManager
+@inject IdentityService IdentityService
+@inject NavigationManager NavigationManager
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Users Login</li>
+    </ol>
+</nav>
+<div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+    <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+        <thead>
+            <tr class="text-uppercase font-size-1">
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Email
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        First Name
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Last Name
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Address
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                      Phone
+                    </div>
+                </th>
+
+            </tr>
+        </thead>
+        @foreach (var item in models)
+        {
+            <tbody class="font-size-1">
+                <tr @onclick="(() => EditAdmin(item.Id))">
+                    <td class="align-middle font-weight-normal">@item.Email</td>
+                    <td class="align-middle">@item.FirstName</td>
+                    <td class="align-middle">@item.LastName</td>
+                    <td class="align-middle">@item.Address</td>
+                    <td class="align-middle">@item.Phone</td>
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>
+
+
+@code {
+
+    private IEnumerable<AppUser> models = new List<AppUser>();
+    private IEnumerable<IdentityRole> identityModel = new List<IdentityRole>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity.IsAuthenticated)
+        {
+
+            models = await IdentityService.GetAllUsers();
+            this.StateHasChanged();
+        }
+    }
+    protected async Task Delete(string id)
+    {
+        await IdentityService.DeleteFeaturesAsync(id);
+        models = await IdentityService.GetAllUsers();
+        this.StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+    protected void EditAdmin(string id)
+    {
+        NavigationManager.NavigateTo("/edit-admin-users/" + id);
+    }
+}

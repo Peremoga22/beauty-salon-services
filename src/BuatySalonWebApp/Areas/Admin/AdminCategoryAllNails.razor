@@ -1,0 +1,88 @@
+﻿@page "/admin-category-all-nails"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject CategoryAllNailsService CategoryAllNailsService
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Category Nails</li>
+    </ol>
+</nav>
+<div>
+    <div class="text-left m-1">
+        <NavLink class="btn btn-primary mb-1" href="/edit-category-all-nails">&nbsp;+&nbsp;</NavLink>
+    </div>
+</div>
+<div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+    <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+        <thead>
+            <tr class="text-uppercase font-size-1">
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Title
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.Title))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.Title))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        @foreach (var item in categories)
+        {
+            <tbody class="font-size-1">
+                <tr @onclick="(() => EditAdmin(item.Id))">
+                    <td class="align-middle font-weight-normal">@item.Name</td>
+
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>
+
+
+@code {
+    protected CategoryAllNailsModel model = new CategoryAllNailsModel();
+    protected IEnumerable<CategoryAllNailsModel> categories = new List<CategoryAllNailsModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await CategoryAllNailsService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+    protected void EditAdmin(int id)
+    {
+        NavigationManager.NavigateTo("/edit-category-all-nails/" + id);
+    }
+    protected void SortTableUp(ColName colName)
+    {
+        switch (colName)
+        {
+            case ColName.Title:
+                categories = categories.OrderBy(t => t.Name);
+                break;
+
+            default: break;
+        }
+        this.StateHasChanged();
+    }
+    protected void SortTableDown(ColName colName)
+    {
+        switch (colName)
+        {
+            case ColName.Title:
+                categories = categories.OrderByDescending(t => t.Name);
+                break;
+
+            default: break;
+        }
+        this.StateHasChanged();
+    }
+    protected enum ColName
+    {
+        Title = 1,
+        Image,
+        ShortDescription,
+        LongDescription
+    }
+}

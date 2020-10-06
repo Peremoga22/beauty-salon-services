@@ -1,0 +1,86 @@
+﻿@page "/admin-our-employees"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@using Microsoft.Extensions.Caching.Memory
+@inject IMemoryCache cache
+@inject OurEmployeesService OurEmployeesService
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Our employees</li>
+    </ol>
+</nav>
+<div class="text-left m-1">
+    <NavLink class="btn btn-primary mb-1" href="/edit-our-employee"> &nbsp;+&nbsp;</NavLink>
+</div>
+<div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+    <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+        <thead>
+            <tr class="text-uppercase font-size-1">
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Photo
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Title
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Description
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        @foreach (var item in employeeList)
+        {
+            <tbody class="font-size-1">
+                <tr @onclick="(() => EditAdminOurEmployee(item.Id))">
+                    <td class="align-middle font-weight-normal"><img src="data:image/jpg;base64, @item.Photo" class="img-thumbnail" style="height:120px;width:240px;" alt="" /></td>
+                    <td class="align-middle ">@item.Title</td>
+                    <td class="align-middle">@item.Description</td>
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>
+
+@code {
+    protected IEnumerable<OurEmployee> employeeList = new List<OurEmployee>();
+    protected override async Task OnInitializedAsync()
+    {
+        var value = cache.Get<List<OurEmployee>>("AdminOurEmployees");
+        if (value == null)
+        {
+            employeeList = await OurEmployeesService.GetAllListAsync();
+            cache.Set("AdminOurEmployees", employeeList);
+        }
+        else
+        {
+            employeeList = value;
+        }
+        employeeList = await OurEmployeesService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+
+    protected void EditAdminOurEmployee(int id)
+    {
+        NavigationManager.NavigateTo("/edit-our-employee/" + id);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

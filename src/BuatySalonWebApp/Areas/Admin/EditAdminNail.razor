@@ -1,0 +1,86 @@
+﻿@page "/edit-price-nail"
+@page "/edit-price-nail/{Id:int}"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject PriceNailService PriceNailService
+
+@if (Id == 0)
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+            <li class="breadcrumb-item"><a href="/admin-price-nail"> Price nail style</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Price nail style</li>
+        </ol>
+    </nav>
+}
+else
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-3">
+            <li class="breadcrumb-item"><a href="/admin-price-nail"> Price nail style</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Price nail style</li>
+        </ol>
+    </nav>
+}
+<EditForm Model="@model" OnValidSubmit="HandleValidSubmit" class="card-body shadow-primary-lg p-3 mb-5 rounded">
+    <DataAnnotationsValidator />
+    <div>
+        <div class="row d-flex">
+            <div class="col-lg-12 form-group">
+                <label for="promotions-title">Title:<span style="color:red;">*</span></label>
+                <InputText id="category" @bind-Value="model.Description" class="form-control promotions-datepicker" />
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="row d-flex">
+            <div class="col-lg-12 form-group">
+                <label for="promotions-title">Price:<span style="color:red;">*</span></label>
+                <InputNumber id="category" @bind-Value="model.Price" class="form-control promotions-datepicker" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="ml-sm-3 m-auto">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <NavLink class="btn btn-outline-secondary" href="/admin-price-nail">Cancel</NavLink>
+        </div>
+        <div class="p-3">
+            <button type="button" class="btn btn-danger m-2" @onclick="(() => Delete(model.Id))">Delete</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    protected PriceNail model = new PriceNail();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id != 0)
+        {
+            model = await PriceNailService.GetById(Id);
+        }
+    }
+    private void HandleValidSubmit()
+    {
+        PriceNailService.Save(model);
+        NavigationManager.NavigateTo("/admin-price-nail");
+    }
+    protected async Task Delete(int priseNailId)
+    {
+        await PriceNailService.DeleteAsync(priseNailId);
+        NavigationManager.NavigateTo("/admin-price-nail");
+        this.StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

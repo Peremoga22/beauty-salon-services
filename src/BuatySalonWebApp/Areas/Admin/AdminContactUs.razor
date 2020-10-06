@@ -1,0 +1,77 @@
+﻿@page "/admin-contact-us"
+@layout AdminLayout
+@inject ContactUsService  ContactUsService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Contact Us</li>
+    </ol>
+</nav>
+<div>
+    <div class="text-left m-1">
+        <NavLink class="btn btn-primary mb-1" href="/edit-contact-us">&nbsp;+&nbsp;</NavLink>
+    </div>
+</div>
+<div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+    <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+        <thead>
+            <tr class="text-uppercase font-size-1">
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Title
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Short Description
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Long Description
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        @foreach (var item in contactUs)
+        {
+            <tbody class="font-size-1">
+                <tr @onclick="(() => EditAdmin(item.Id))">
+                    <td class="align-middle font-weight-normal">@item.Title</td>
+                    <td class="align-middle ">@item.ShortDescription</td>
+                    <td class="align-middle">@item.LongDescription</td>
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>
+
+@code {
+    protected IEnumerable<ContactUs> contactUs = new List<ContactUs>();
+    protected ContactUs model = new ContactUs();
+
+    protected override async Task OnInitializedAsync()
+    {
+        contactUs = await ContactUsService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+    protected void EditAdmin(Guid id)
+    {
+        NavigationManager.NavigateTo("/edit-contact-us/" + id);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

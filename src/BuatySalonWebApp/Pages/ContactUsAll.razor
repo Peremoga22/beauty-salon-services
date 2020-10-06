@@ -1,0 +1,72 @@
+﻿@page "/contact-us-all"
+@inject ContactUsService ContactUsService
+@inject ContactUsInfoService ContactUsInfoService
+@inject ContactUsIconService ContactUsIconService
+@inject ContactUsIconService ContactUsIconService
+@inject IJSRuntime JSRuntime
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter m-lg-4 p-3">
+        <li class="breadcrumb-item active" aria-current="page">Contact Us</li>
+    </ol>
+</nav>
+@foreach (var item in contacts)
+{
+    <div id="SVGheroSectionBg" class=" position-relative gradient-half-primary-v3">
+        <div class="container space-2">
+            <div class="row align-items-lg-center">
+                <div class="col-lg-5 mb-7 mb-lg-0">
+                    <h1 class="mb-4">@item.Title</h1>
+                    <p>@item.ShortDescription</p>
+                </div>
+                <div class="col-lg-7">
+                    <figure class="ie-working-men">
+                        <img class="js-svg-injector" src="./assets/svg/illustrations/working-men.svg" alt="Image Description"
+                             data-parent="#SVGheroSectionBg">
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix space-2">
+        <div class="row no-gutters">
+            @foreach (var itemInfo in item.ContactUsInfo)
+            {
+                <div class="col-sm-6 col-lg-3 u-ver-divider u-ver-divider--none-lg">
+                    <div class="text-center p-5">
+                        @if (itemInfo.ContactUsIcon != null)
+                        {
+                            <img src="data:image/svg+xml;base64, @itemInfo.ContactUsIcon.Icon" class="js-svg-injector" style="height:60px;width:60px;" alt="" />
+
+                        }
+                        <h2 class="h6 mb-0">@itemInfo.Name</h2>
+                        <p class="mb-0">@itemInfo.ShortDescription</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+
+@code {
+    protected List<ContactUs> contacts = new List<ContactUs>();
+    protected IEnumerable<ContactUsInfo> listContactUs = new List<ContactUsInfo>();
+    protected ContactUsInfo info = new ContactUsInfo();
+    protected IEnumerable<ContactUsIcon> icon = new List<ContactUsIcon>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        contacts = await ContactUsService.GetAllListAsync();
+        listContactUs = await ContactUsInfoService.GetAllListAsync();
+        icon = await ContactUsIconService.GetAllListAsync();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+            await JSRuntime.InvokeVoidAsync("setTitle", "Beauty Salon - Contact Us");
+        }
+    }
+}

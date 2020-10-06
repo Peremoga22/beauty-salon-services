@@ -1,0 +1,94 @@
+﻿@page "/edit-faq"
+@page "/edit-faq/{Id:guid}"
+@inject FaqService FaqService 
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@layout AdminLayout
+
+@if (!Guid.Empty.Equals(Id))
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+            <li class="breadcrumb-item"><a href="/admin-faq">FAQ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit FAQ</li>
+        </ol>
+    </nav>
+}
+else
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-3">
+            <li class="breadcrumb-item"><a href="/admin-faq">FAQ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add FAQ</li>
+        </ol>
+    </nav>
+}
+<EditForm Model="@model" OnValidSubmit="HandleValidSubmit" class="card-body">
+    <DataAnnotationsValidator />
+    <div class="m-1">
+        <div class="ml-sm-m-3 m-auto">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <NavLink class="btn btn-outline-secondary" href="/admin-faq">Cancel</NavLink>
+        </div>
+    </div>
+    <div class="shadow-primary-lg p-3 mb-2 rounded">
+        <div class="row d-flex">
+            <div class="col-lg-12 form-group">
+                <label for="promotions-title">Number:<span style="color:red;">*</span></label>
+                <InputText id="title" @bind-Value="model.Title" class="form-control promotions-datepicker" />
+            </div>
+            <div class="col-lg-12 form-group">
+                <label for="promotions-description">Question:<span style="color:red;">*</span></label>
+                <InputTextArea id="description" @bind-Value="model.Question" class="form-control" rows="7" />
+            </div>
+            <div class="col-lg-12 form-group">
+                <label for="promotions-description">Description:<span style="color:red;">*</span></label>
+                <InputTextArea id="description" @bind-Value="model.Description" class="form-control" rows="7" />
+            </div>
+        </div>
+    </div>
+    <div class="row m-auto">
+        <div class="ml-sm-3 m-auto">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <NavLink class="btn btn-outline-secondary" href="/admin-faq">Cancel</NavLink>
+        </div>
+        <div class="p-3">
+            <button type="button" class="btn btn-danger" @onclick="(() => Delete(model.Id))">Delete</button>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected IEnumerable<FrequentlyAskedQuestion> faq = new List<FrequentlyAskedQuestion>();
+    protected FrequentlyAskedQuestion model = new FrequentlyAskedQuestion();
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Guid.Empty.Equals(Id))
+        {
+           model = await FaqService.GetById(Id);
+        }
+    }
+    private void HandleValidSubmit()
+    {
+        FaqService.Save(model);
+        NavigationManager.NavigateTo("/admin-faq");
+    }
+    protected async Task Delete(Guid faqId)
+    {
+        await FaqService.DeleteAsync(faqId);
+        faq = await FaqService.GetAllListAsync();
+        NavigationManager.NavigateTo("/admin-faq");
+        this.StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

@@ -1,0 +1,72 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+
+<!-- Form -->
+<form class="js-validate" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+    <!-- Title -->
+    <div class="mb-7">
+        <h1 class="h3 text-primary font-weight-normal mb-0">Welcome to <span class="font-weight-semi-bold">Beauty Salon</span></h1>
+        <p>Fill out the form to get started.</p>
+    </div>
+    <!-- End Title -->
+    <!-- Form Group -->
+    <div class="js-form-message form-group">
+        <label class="form-label" for="signinSrEmailExample3">Email address</label>
+        <input asp-for="Input.Email" class="form-control" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+    <!-- End Form Group -->
+    <!-- Form Group -->
+    <div class="js-form-message form-group">
+        <label class="form-label" for="signinSrPasswordExample2">Password</label>
+        <input asp-for="Input.Password" class="form-control" />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+    <!-- End Form Group -->
+    <!-- Form Group -->
+    <div class="js-form-message form-group">
+        <label class="form-label" for="signinSrConfirmPassword">Confirm password</label>
+        <input asp-for="Input.ConfirmPassword" class="form-control" />
+        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+    </div>
+    <!-- End Form Group -->
+    <!-- Checkbox -->
+    <div class="js-form-message mb-5">
+        <div class="custom-control custom-checkbox d-flex align-items-center text-muted">
+            <input type="checkbox" class="custom-control-input" id="termsCheckbox" name="termsCheckbox" required
+                   data-msg="Please accept our Terms and Conditions."
+                   data-error-class="u-has-error"
+                   data-success-class="u-has-success">
+            <label class="custom-control-label" for="termsCheckbox">
+                <small>
+                    I agree to the
+                    @*<a class="link-muted" href="../pages/terms.html">Terms and Conditions</a>*@
+                </small>
+            </label>
+        </div>
+    </div>
+    <!-- End Checkbox -->
+    <!-- Button -->
+    <div class="row align-items-center mb-5">
+        <div class="col-5 col-sm-6">
+            <span class="small text-muted">Already have an account?</span>
+            <a class="small" href="./Login">Login</a>
+        </div>
+
+        <div class="col-7 col-sm-6 text-right">
+            <button type="submit" class="btn btn-primary transition-3d-hover">Register</button>
+        </div>
+    </div>
+    <!-- End Button -->
+</form>
+<!-- End Form -->
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,248 @@
+﻿@page "/admin-services"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject AllModelService AllModelService
+@inject CategoryService CategoryService
+@using Microsoft.Extensions.Caching.Memory
+@inject IMemoryCache cache
+
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Service</li>
+    </ol>
+</nav>
+<div class="text-left m-1">
+    <NavLink class="btn btn-primary mb-1" href="/edit-services"> &nbsp;+&nbsp;</NavLink>
+</div>
+<div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+    <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+        <thead>
+            <tr class="text-uppercase font-size-1">
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Title
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.Title))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.Title))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Image
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.Image))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.Image))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Short Description
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.ShortDescription))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.ShortDescription))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Long Description
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.LongDescription))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.LongDescription))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Skills
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.Skills))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.Skills))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Project Url
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.ProjectUrl))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.ProjectUrl))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Action
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.ProjectUrl))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.ProjectUrl))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        @foreach (var item in modelServiceList)
+        {
+            <tbody class="font-size-1">
+                <tr>
+                    <td>
+                        <a type="button" title="move up" class="fas fa-angle-up u-datatable__thead-icon" @onclick="(() =>MovedNumberUp(item.Id))"></a>
+                        <a type="button" title="move down" class="fas fa-angle-down u-datatable__thead-icon" @onclick="(() =>MovedNumberDown(item.Id))"> </a>
+                    </td>
+                    <td class="align-middle font-weight-normal" @onclick="(() => EditAdminPortfolio(item.Id))">@item.Title</td>
+                    <td class="align-middle" @onclick="(() => EditAdminPortfolio(item.Id))"> <img src="data:image/jpg;base64, @item.Image" class="img-thumbnail" style="height:120px;width:640px;" alt="" /></td>
+                    <td class="align-middle" @onclick="(() => EditAdminPortfolio(item.Id))">@item.ShortDescription</td>
+                    <td class="align-middle" @onclick="(() => EditAdminPortfolio(item.Id))">@item.LongDescription</td>
+                    <td class="align-middle" @onclick="(() => EditAdminPortfolio(item.Id))">@item.Skills</td>
+                    <td class="align-middle" @onclick="(() => EditAdminPortfolio(item.Id))">@item.ProjectUrl</td>
+                    <td class="btn btn-primary text-center m-1" @onclick="(()=> hrefHeader())">View</td>
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>
+
+@code {
+    protected IEnumerable<ModelService> modelServiceList = new List<ModelService>();
+    protected IEnumerable<Category> categories = new List<Category>();
+    protected Category category = new Category();
+    protected ModelService modelService = new ModelService();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var value = cache.Get<List<ModelService>>("KeyAdminAllService");
+        if(value == null)
+        {
+            modelServiceList = await AllModelService.GetAllListAsync();
+            cache.Set("KeyAdminAllService", modelServiceList);
+        }
+        else
+        {
+            modelServiceList = value;
+            modelServiceList = await AllModelService.GetAllListAsync();
+            cache.Set("KeyAdminAllService", modelServiceList);
+        }
+        categories = await CategoryService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+    protected void EditAdminPortfolio(Guid id)
+    {
+        NavigationManager.NavigateTo("/edit-services/" + id);
+    }
+    protected void hrefHeader()
+    {
+        NavigationManager.NavigateTo("/services");
+    }
+    protected async  void MovedNumberUp(Guid id)
+    {
+        var temp = modelServiceList.Where(p => p.Id == id).SingleOrDefault().SortNumber;
+        if (temp - 1 > 0)
+        {
+            modelServiceList.Where(p => p.SortNumber == temp - 1).SingleOrDefault().SortNumber = temp;
+            modelServiceList.Where(p => p.Id == id).SingleOrDefault().SortNumber = temp - 1;
+            var el1 = modelServiceList.Where(p => p.SortNumber == temp).SingleOrDefault();
+            AllModelService.SaveModelAdminService(el1);
+            var el2 = modelServiceList.Where(p => p.Id == id).SingleOrDefault();
+            AllModelService.SaveModelAdminService(el2);
+        }
+        await OnInitializedAsync();
+    }
+    protected async void MovedNumberDown(Guid id)
+    {
+        var temp = modelServiceList.Where(p => p.Id == id).SingleOrDefault().SortNumber;
+        if (temp + 1 <= modelServiceList.Count())
+        {
+            modelServiceList.Where(p => p.SortNumber == temp + 1).SingleOrDefault().SortNumber = temp;
+            modelServiceList.Where(p => p.Id == id).SingleOrDefault().SortNumber = temp + 1;
+            var el1 = modelServiceList.Where(p => p.SortNumber == temp).SingleOrDefault();
+            AllModelService.SaveModelAdminService(el1);
+            var el2 = modelServiceList.Where(p => p.Id == id).SingleOrDefault();
+            AllModelService.SaveModelAdminService(el2);
+        }
+        await OnInitializedAsync();
+    }
+    protected void SortTableDown(ColName colName)
+    {
+        switch (colName)
+        {
+            case ColName.Title:
+                modelServiceList = modelServiceList.OrderByDescending(t => t.Title);
+                break;
+
+            case ColName.Image:
+                modelServiceList = modelServiceList.OrderByDescending(t => t.Image);
+                break;
+
+            case ColName.ShortDescription:
+                modelServiceList = modelServiceList.OrderByDescending(t => t.ShortDescription);
+                break;
+
+            case ColName.LongDescription:
+                modelServiceList = modelServiceList.OrderByDescending(t => t.LongDescription);
+                break;
+
+            case ColName.Skills:
+                modelServiceList = modelServiceList.OrderByDescending(t => t.Skills);
+                break;
+
+            case ColName.ProjectUrl:
+                modelServiceList = modelServiceList.OrderByDescending(t => t.ProjectUrl);
+                break;
+
+            default: break;
+        }
+        this.StateHasChanged();
+    }
+    protected void SortTableUp(ColName colName)
+    {
+        switch (colName)
+        {
+            case ColName.Title:
+                modelServiceList = modelServiceList.OrderBy(t => t.Title);
+                break;
+
+            case ColName.Image:
+                modelServiceList = modelServiceList.OrderBy(t => t.Image);
+                break;
+
+            case ColName.ShortDescription:
+                modelServiceList = modelServiceList.OrderBy(t => t.ShortDescription);
+                break;
+
+            case ColName.LongDescription:
+                modelServiceList = modelServiceList.OrderBy(t => t.LongDescription);
+                break;
+
+            case ColName.Skills:
+                modelServiceList = modelServiceList.OrderBy(t => t.Skills);
+                break;
+
+            case ColName.ProjectUrl:
+                modelServiceList = modelServiceList.OrderBy(t => t.ProjectUrl);
+                break;
+
+            default: break;
+        }
+        this.StateHasChanged();
+    }
+    protected enum ColName
+    {
+        Title = 1,
+        Image,
+        ShortDescription,
+        LongDescription,
+        Skills,
+        ProjectUrl
+    }
+}

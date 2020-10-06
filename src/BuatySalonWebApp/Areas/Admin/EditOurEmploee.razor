@@ -1,0 +1,127 @@
+﻿@page "/edit-our-employee"
+@page "/edit-our-employee/{Id:int}"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject OurEmployeesService OurEmployeesService
+@using Microsoft.Extensions.Caching.Memory
+@inject IMemoryCache cache
+
+@if (Id == 0)
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+            <li class="breadcrumb-item"><a href="/admin-our-employees"> Our Employees</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Our Employees</li>
+        </ol>
+    </nav>
+}
+else
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-3">
+            <li class="breadcrumb-item"><a href="/admin-our-employees"> Our Employees</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Our Employees</li>
+        </ol>
+    </nav>
+}
+<EditForm Model="@model" OnValidSubmit="HandleValidSubmit" class="card-body shadow-primary-lg p-3 mb-5 rounded">
+    <DataAnnotationsValidator />
+    <div>
+        <div class="col-lg-12 form-group">
+            <label class="file-attachment-input" for="fileAttachmentInput">
+                <img src="data:image/jpg;base64, @model.Photo" class="img-thumbnail" alt="" />
+                <small class="d-block text-muted">Maximum file size 2MB</small>
+                <InputFile OnChange="HandleFileSelected" />
+            </label>
+            @if (ErrorMessage != "")
+            {
+                <label style="color:red">@ErrorMessage</label>
+            }
+        </div>
+    </div>
+    <div>
+        <div class="row d-flex">
+            <div class="col-lg-12 form-group">
+                <label for="promotions-title">Title:<span style="color:red;">*</span></label>
+                <InputText id="category" @bind-Value="model.Title" class="form-control promotions-datepicker" />
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="row d-flex">
+            <div class="col-lg-12 form-group">
+                <label for="promotions-title">Description:<span style="color:red;">*</span></label>
+                <InputText id="category" @bind-Value="model.Description" class="form-control promotions-datepicker" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="ml-sm-3 m-auto">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <NavLink class="btn btn-outline-secondary" href="/admin-our-employees">Cancel</NavLink>
+        </div>
+        <div class="p-3">
+            <button type="button" class="btn btn-danger m-2" @onclick="(() => Delete(model.Id))">Delete</button>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private IFileListEntry file;
+
+    protected OurEmployee model = new OurEmployee();
+    protected string ErrorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id != 0)
+        {
+            model = await OurEmployeesService.GetById(Id);
+        }
+    }
+    private void HandleValidSubmit()
+    {
+        OurEmployeesService.Save(model);
+        cache.Remove("KeyIndexEmployee");
+        cache.Remove("AdminOurEmployees");
+        NavigationManager.NavigateTo("/admin-our-employees");
+    }
+    public async Task HandleFileSelected(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            ErrorMessage = "";
+            if (file.Size > 2097152)
+            {
+                ErrorMessage = "File size more 2 MB!";
+                this.ShouldRender();
+                return;
+            }
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms).ConfigureAwait(false);
+            ms.Position = 0;
+            model.Photo = Convert.ToBase64String(ms.ToArray());
+            this.ShouldRender();
+        }
+    }
+    protected async Task Delete(int employeeId)
+    {
+        await OurEmployeesService.DeleteAsync(employeeId);
+
+        NavigationManager.NavigateTo("/admin-our-employees");
+        this.StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}
+

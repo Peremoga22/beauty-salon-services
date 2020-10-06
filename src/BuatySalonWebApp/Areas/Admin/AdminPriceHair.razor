@@ -1,0 +1,67 @@
+﻿@page "/admin-price-hair"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject PriceHairService PriceHairService
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Price hair</li>
+    </ol>
+</nav>
+<div class="text-left m-1">
+    <NavLink class="btn btn-primary mb-1" href="/edit-price-hair"> &nbsp;+&nbsp;</NavLink>
+</div>
+<div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+    <table class="table table-bordered table-striped  table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounde">
+        <thead>
+            <tr class="text-uppercase font-size-1 text-sm-center">
+                <th scope="col" class="font-weight-medium">
+                    <div class=" justify-content-between align-items-center">
+                        Description
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class=" justify-content-between align-items-center">
+                        Price
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        @foreach (var item in listPrice)
+        {
+            <tbody class="font-size-1">
+                <tr @onclick="(() => EditAdminPriceHair(item.Id))">
+                    <td class="align-middle text-sm-center">@item.Description</td>
+                    <td class="align-middle text-sm-center"><span class="oi oi-dollar"></span>@item.Price</td>
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>
+
+
+@code {
+    protected IEnumerable<PriceHair> listPrice = new List<PriceHair>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        listPrice = await PriceHairService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+    protected void EditAdminPriceHair(int id)
+    {
+        NavigationManager.NavigateTo("/edit-price-hair/" + id);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

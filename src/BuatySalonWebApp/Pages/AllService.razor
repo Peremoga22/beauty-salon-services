@@ -1,0 +1,97 @@
+﻿@layout MainLayout
+@page "/services"
+@inject IJSRuntime JSRuntime
+@inject AllModelService AllModelService
+@inject CategoryService  CategoryService
+@using Microsoft.Extensions.Caching.Memory
+@inject IMemoryCache cache
+
+
+    <div class="text-left">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-no-gutter  m-lg-4 p-3">
+                <li class="breadcrumb-item active" aria-current="page">Hair</li>
+            </ol>
+        </nav>
+    </div>
+
+<div class="container col-10 col-sm-12 ">
+    <div class="row d-flex  justify-content-center m-6 m-sm-12">
+        @foreach (var item in categories)
+        {
+            @if (selectCategoryId == item.Id)
+            {
+                <button type="button" @onclick="(() => getByCategory(item.Id))" class="btn  btn-primary text-center m-1"disabled=@IsTaskRunning>@item.Name</button>
+            }
+            else
+            {
+                <button type="button" @onclick="(() => getByCategory(item.Id))" class="btn btn-outline-primary text-center m-1"disabled=@IsTaskRunning>@item.Name</button>
+            }
+        }
+    </div>
+</div>
+<div class="container col-10 col-sm-12 ">
+    <div class="row d-flex  justify-content-center m-6 m-sm-12">
+        @foreach (var item in modelService)
+        {
+            <div class="card-deck card-sm-gutters-3 d-block d-sm-flex col-md-4 col-sm-offset-8 col-xs-12 text-center padding wow fadeIn service-item  p-3 mb-5 rounded card-sm-gutters-1 d-block d-sm-flex">
+                <div class="card mb-3">
+                    <img src="data:image/jpg;base64, @item.Image" class="img-thumbnail text-right"style="margin-right:auto;margin-left:auto; width:100%" alt="" />
+                    <div class="card-body ">
+                        <h5 class="card-title">@item.Title</h5>
+                        <p class="card-text">@item.ShortDescription</p>
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-outline-primary text-center m-1" href="/view-all-services/@item.Url">Read more</a>
+                        @*<a class="btn btn-outline-primary text-center m-1" target="_blank" href="@item.ProjectUrl">View Project</a>*@
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+@code {
+
+    protected Category model = new Category();
+    protected List<Category> categories = new List<Category>();
+    protected List<ModelService> modelService = new List<ModelService>();
+
+    protected int selectCategoryId = 0;
+    bool IsTaskRunning = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var value = cache.Get<List<ModelService>>("KeyServicePage");
+        if(value==null)
+        {
+            modelService = await AllModelService.GetAllListAsync();
+            cache.Set("KeyServicePage", modelService);
+        }
+        else
+        {
+            modelService = value;
+        }
+
+        categories = await CategoryService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+    protected async Task getByCategory(int id)
+    {
+        IsTaskRunning = true;
+        selectCategoryId = id;
+        modelService = await AllModelService.GetByCategoryIdAsync(id);
+        IsTaskRunning = false;
+        this.StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+            await JSRuntime.InvokeVoidAsync("setTitle", "Beauty Salon - Hair");
+        }
+    }
+}

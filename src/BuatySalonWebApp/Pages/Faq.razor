@@ -1,0 +1,70 @@
+﻿@page "/faq"
+@inject FaqService FaqService
+@inject IJSRuntime JSRuntime
+
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter m-lg-4 p-3">
+        <li class="breadcrumb-item active" aria-current="page">Frequently asked question</li>
+    </ol>
+</nav>
+<div class="container space-md-1">
+    <div class="w-md-80 w-lg-50 text-center mx-md-auto mb-9">
+        <span class="btn btn-xs btn-soft-success btn-pill mb-2">Help</span>
+        <h2 class="text-primary">Frequently asked <span class="font-weight-semi-bold">question</span>:</h2>
+    </div>
+    <div class="space-bottom-2 space-bottom-md-3">
+        <div class="row">
+            @foreach (var item in faq)
+            {
+                @if (i % 2 == 0)
+                {
+
+                    <div class="col-md-6 mb-5">                        
+                        <div class="pr-md-4">
+                            <h3 class="h6">@item.Question</h3>
+                            <p>@item.Description</p>
+                        </div>
+                    </div>
+                    i++;
+                }
+                else
+                {
+                    <div class="col-md-6 mb-5">
+                        <div class="pl-md-4">
+                            <h3 class="h6">@item.Question</h3>
+                            <p>@item.Description</p>
+                        </div>
+                    </div>
+                    i++;
+                }
+            }
+
+            <div class="w-100"></div>
+        </div>
+    </div>
+    <div class="w-80 mx-auto">
+        <hr class="my-0">
+    </div>
+</div>
+
+
+@code {
+    protected List<FrequentlyAskedQuestion> faq = new List<FrequentlyAskedQuestion>();
+    protected FrequentlyAskedQuestion model = new FrequentlyAskedQuestion();
+    private int i = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        faq = await FaqService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+            await JSRuntime.InvokeVoidAsync("setTitle", "Beauty Salon - Faq");
+        }
+    }
+}
+

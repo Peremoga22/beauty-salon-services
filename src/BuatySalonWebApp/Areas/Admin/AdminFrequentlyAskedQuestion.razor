@@ -1,0 +1,78 @@
+﻿@page "/admin-faq"
+@layout AdminLayout
+@inject FaqService  FaqService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">FAQ</li>
+    </ol>
+</nav>
+<div>
+    <div class="text-left m-1">
+        <NavLink class="btn btn-primary mb-1" href="/edit-faq">&nbsp;+&nbsp;</NavLink>
+    </div>
+</div>
+<div class="table-responsive-md u-datatable shadow-primary-lg p-3 mb-5 rounded">
+    <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+        <thead>
+            <tr class="text-uppercase font-size-1 ">
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        №
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Question
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Description
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        @foreach (var item in faq)
+        {
+            <tbody class="font-size-1">
+                <tr @onclick="(() => EditAdmin(item.Id))">
+                    <td class="align-middle font-weight-normal">@item.Title</td>
+                    <td class="align-middle ">@item.Question</td>
+                    <td class="align-middle">@item.Description</td>
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>
+
+
+@code {
+    protected IEnumerable<FrequentlyAskedQuestion> faq = new List<FrequentlyAskedQuestion>();
+    protected FrequentlyAskedQuestion model = new FrequentlyAskedQuestion();
+
+    protected override async Task OnInitializedAsync()
+    {
+        faq = await FaqService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+    protected void EditAdmin(Guid id)
+    {
+        NavigationManager.NavigateTo("/edit-faq/" + id);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

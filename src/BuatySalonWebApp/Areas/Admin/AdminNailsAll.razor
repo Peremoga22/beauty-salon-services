@@ -1,0 +1,206 @@
+﻿@page "/admin-nails-all"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject CategoryAllNailsService CategoryAllNailsService
+@inject NailsAllService NailsAllService
+@inject IJSRuntime JSRuntime
+@using Microsoft.Extensions.Caching.Memory
+@inject IMemoryCache cache
+
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Nails</li>
+    </ol>
+</nav>
+<div class="text-left m-1">
+    <NavLink class="btn btn-primary mb-1" href="/edit-nails-services"> &nbsp;+&nbsp;</NavLink>
+</div>
+<div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+    <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+        <thead>
+            <tr class="text-uppercase font-size-1">
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Title
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.Title))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.Title))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Image
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.Image))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.Image))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Short Description
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.ShortDescription))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.ShortDescription))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Long Description
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.LongDescription))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.LongDescription))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>                             
+               
+            </tr>
+        </thead>
+        @foreach (var item in nailsAllModels)
+        {
+            <tbody class="font-size-1">
+                <tr>
+                    <td>
+                        <a type="button" title="move up" class="fas fa-angle-up u-datatable__thead-icon" @onclick="(() =>MovedNumberUp(item.Id))"></a>
+                        <a type="button" title="move down" class="fas fa-angle-down u-datatable__thead-icon" @onclick="(() =>MovedNumberDown(item.Id))"> </a>
+                    </td>
+                    <td class="align-middle font-weight-normal" @onclick="(() => EditAdminPortfolio(item.Id))">@item.Title</td>
+                    <td class="align-middle" @onclick="(() => EditAdminPortfolio(item.Id))"> <img src="data:image/jpg;base64, @item.Image" class="img-thumbnail" style="height:120px;width:240px;" alt="" /></td>
+                    <td class="align-middle" @onclick="(() => EditAdminPortfolio(item.Id))">@item.ShortDescription</td>
+                    <td class="align-middle" @onclick="(() => EditAdminPortfolio(item.Id))">@item.LongDescription</td>
+                    <td class="btn btn-primary text-center m-1" @onclick="(()=> hrefHeader())">View</td>
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>
+
+@code {
+    protected IEnumerable<NailsAllModel> nailsAllModels = new List<NailsAllModel>();
+    protected IEnumerable<CategoryAllNailsModel> categories = new List<CategoryAllNailsModel>();
+    protected NailsAllModel model = new NailsAllModel();
+    protected CategoryAllNailsModel category = new CategoryAllNailsModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var value = cache.Get<List<NailsAllModel>>("KeyAdminNailsPage");
+        if(value == null)
+        {
+            nailsAllModels = await NailsAllService.GetAllListAsync();
+            cache.Set("KeyAdminNailsPage", nailsAllModels);
+        }
+        else
+        {
+            nailsAllModels = value;
+            nailsAllModels = await NailsAllService.GetAllListAsync();
+            cache.Set("KeyAdminNailsPage", nailsAllModels);
+        }
+        categories = await CategoryAllNailsService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+
+    protected void EditAdminPortfolio(Guid id)
+    {
+        NavigationManager.NavigateTo("/edit-nails-services/" + id);
+    }
+
+    protected async void MovedNumberUp(Guid id)
+    {
+        var temp = nailsAllModels.Where(p => p.Id == id).SingleOrDefault().SortNumber;
+        if (temp - 1 > 0)
+        {
+            nailsAllModels.Where(p => p.SortNumber == temp - 1).SingleOrDefault().SortNumber = temp;
+            nailsAllModels.Where(p => p.Id == id).SingleOrDefault().SortNumber = temp - 1;
+            var el1 = nailsAllModels.Where(p => p.SortNumber == temp).SingleOrDefault();
+            NailsAllService.SaveNailAdmin(el1);
+            var el2 = nailsAllModels.Where(p => p.Id == id).SingleOrDefault();
+            NailsAllService.SaveNailAdmin(el2);
+        }
+        await OnInitializedAsync();
+    }
+
+    protected async void MovedNumberDown(Guid id)
+    {
+        var temp = nailsAllModels.Where(p => p.Id == id).SingleOrDefault().SortNumber;
+        if (temp + 1 <= nailsAllModels.Count())
+        {
+            nailsAllModels.Where(p => p.SortNumber == temp + 1).SingleOrDefault().SortNumber = temp;
+            nailsAllModels.Where(p => p.Id == id).SingleOrDefault().SortNumber = temp + 1;
+            var el1 = nailsAllModels.Where(p => p.SortNumber == temp).SingleOrDefault();
+            NailsAllService.SaveNailAdmin(el1);
+            var el2 = nailsAllModels.Where(p => p.Id == id).SingleOrDefault();
+            NailsAllService.SaveNailAdmin(el2);
+        }
+        await OnInitializedAsync();
+    }
+    protected void SortTableUp(ColName colName)
+    {
+        switch (colName)
+        {
+            case ColName.Title:
+                nailsAllModels = nailsAllModels.OrderBy(t => t.Title);
+                break;
+
+            case ColName.Image:
+                nailsAllModels = nailsAllModels.OrderBy(t => t.Image);
+                break;
+
+            case ColName.ShortDescription:
+                nailsAllModels = nailsAllModels.OrderBy(t => t.ShortDescription);
+                break;
+
+            case ColName.LongDescription:
+                nailsAllModels = nailsAllModels.OrderBy(t => t.LongDescription);
+                break;
+
+            default: break;
+        }
+        this.StateHasChanged();
+    }
+    protected void hrefHeader()
+    {
+        NavigationManager.NavigateTo("/portfolios");
+    }
+    protected void SortTableDown(ColName colName)
+    {
+        switch (colName)
+        {
+            case ColName.Title:
+                nailsAllModels = nailsAllModels.OrderByDescending(t => t.Title);
+                break;
+
+            case ColName.Image:
+                nailsAllModels = nailsAllModels.OrderByDescending(t => t.Image);
+                break;
+
+            case ColName.ShortDescription:
+                nailsAllModels = nailsAllModels.OrderByDescending(t => t.ShortDescription);
+                break;
+
+            case ColName.LongDescription:
+                nailsAllModels = nailsAllModels.OrderByDescending(t => t.LongDescription);
+                break;
+
+            default: break;
+        }
+        this.StateHasChanged();
+    }
+    protected enum ColName
+    {
+        Title = 1,
+        Image,
+        ShortDescription,
+        LongDescription
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

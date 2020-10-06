@@ -1,0 +1,252 @@
+﻿@page "/edit-contact-us"
+@page "/edit-contact-us/{Id:guid}"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@layout AdminLayout
+@inject ContactUsIconService ContactUsIconService
+@inject ContactUsInfoService ContactUsInfoService
+@inject ContactUsService ContactUsService
+
+@if (!Guid.Empty.Equals(Id))
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+            <li class="breadcrumb-item"><a href="/admin-contact-us">ContactUs</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit ContactUs</li>
+        </ol>
+    </nav>
+}
+else
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-3">
+            <li class="breadcrumb-item"><a href="/admin-contact-us">ContactUs</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add ContactUs</li>
+        </ol>
+    </nav>
+}
+<div class="card-body">
+    <div class="row">
+        <div class="ml-sm-3 m-3">
+            <button type="button" @onclick="HandleValidSubmit" class="btn btn-primary">Save</button>
+            <NavLink class="btn btn-outline-secondary" href="/admin-contact-us">Cancel</NavLink>
+        </div>
+    </div>
+    <div class="shadow-primary-lg p-3 mb-2 rounded">
+        <EditForm Model="@model" OnValidSubmit="HandleValidSubmit" class="card-body">
+            <DataAnnotationsValidator />
+            <div class="row d-flex">
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-title">Title:<span style="color:red;">*</span></label>
+                    <InputText id="title" @bind-Value="model.Title" class="form-control promotions-datepicker" />
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-description">Short Description:<span style="color:red;">*</span></label>
+                    <InputTextArea id="description" @bind-Value="model.ShortDescription" class="form-control" rows="7" />
+
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-description">Long Description:<span style="color:red;">*</span></label>
+                    <InputTextArea id="description" @bind-Value="model.LongDescription" class="form-control" rows="9" />
+                </div>
+            </div>
+            <h2>Add Contact Us Info:</h2>
+            <div>
+                <div class="text-left m-1">
+                    <button type="button" class="btn btn-primary mb-1" @onclick="Collaps">&nbsp;+&nbsp;</button>
+                </div>
+            </div>
+        </EditForm>
+        <div class="@(Collapsed? "collapse": "" )">
+            <EditForm Model="@modelAdd" OnValidSubmit="HandleValidSubmitAdd" class="card-body">
+                <DataAnnotationsValidator />               
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-title">Title:<span style="color:red;">*</span></label>
+                    <InputText id="title" @bind-Value="modelAdd.Name" class="form-control promotions-datepicker" />
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-description">Short Description:<span style="color:red;">*</span></label>
+                    <InputTextArea id="description" @bind-Value="modelAdd.ShortDescription" class="form-control" rows="7" />
+                </div>
+                <div class="row">
+                    @foreach (var item in iconsList)
+                    {
+                        <div class="col-1">
+                            <br />
+                            <div class="custom-control form-check custom-control-inline">
+                                @if (modelAdd.ContactUsIcon != null)
+                                {
+                                    <input @onclick="(() => CheckIcon(item.Id))" checked="@(item.Id ==modelAdd.ContactUsIcon.Id )" type="radio" class="form-check-input m-sm-2" id="iconsRadio_@item.Id" name="iconsRadio">
+                                }
+                                <label class="form-check-label p-sm-2" for="iconsRadio_@item.Id">
+
+                                    <img src="data:image/svg+xml;base64, @item.Icon" class="js-svg-injector" style="height:60px;width:60px;" alt="" />
+                                </label>
+
+                            </div>
+                        </div>
+                    }
+                </div>
+                <br />
+                <div class="row">
+                    <div class="ml-lg-3 m-auto">
+
+                        <button type="submit" class="btn btn-primary">Add</button>
+
+
+                        <NavLink class="btn btn-outline-secondary" href="/admin-contact-us">Cancel</NavLink>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+        <div class="table-responsive-md u-datatable   p-3 mb-5 rounded">
+            <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+                <thead>
+                    <tr class="text-uppercase font-size-1 row">
+                        <th scope="col" class="font-weight-medium col-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                                Action
+                                <div class="ml-2">
+                                </div>
+                            </div>
+                        </th>
+                        <th scope="col" class="font-weight-medium col-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                Name
+                                <div class="ml-2">
+                                </div>
+                            </div>
+                        </th>
+                        <th scope="col" class="font-weight-medium col-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                Short Description
+                                <div class="ml-2">
+                                </div>
+                            </div>
+                        </th>
+                        <th scope="col" class="font-weight-medium col-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                Icon
+                                <div class="ml-2">
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                @foreach (var item in model.ContactUsInfo)
+                {
+                    <tbody class="font-size-1">
+
+                        <tr class="row">
+                            <td class="col-1">
+                                <a class="btn btn-xs btn-icon btn-soft-secondary transition-3d-hover" href="javascript:;" @onclick="(() => EditAdd(item))" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">
+                                    <span class="fas fa-pen btn-icon__inner"></span>
+                                </a>
+                                <a type="button" class="btn btn-xs btn-icon btn-soft-danger" href="javascript:;" @onclick="(() => DeleteAdd(item))" disabled="">
+                                    <span class="fas fa-times btn-icon__inner"></span>
+                                </a>
+                            </td>
+                            <td class="align-middle font-weight-normal col-2">@item.Name</td>
+                            <td class="align-middle font-weight-normal col-2">@item.ShortDescription</td>
+                            <td><img src="data:image/svg+xml;base64, @item.ContactUsIcon.Icon" class="js-svg-injector" style="height:60px;width:60px;" alt="" /> </td>
+                        </tr>
+                    </tbody>
+                }
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="ml-sm-3 m-auto">
+            <button type="submit" @onclick="HandleValidSubmit" class="btn btn-primary">Save</button>
+            <NavLink class="btn btn-outline-secondary" href="/admin-contact-us">Cancel</NavLink>
+        </div>
+        <div class="p-3">
+            <button type="button" class="btn btn-danger" @onclick="(() => Delete(model.Id))">Delete</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected IEnumerable<ContactUs> categories = new List<ContactUs>();
+    protected IEnumerable<ContactUsIcon> iconsList = new List<ContactUsIcon>();
+    protected List<ContactUsInfo> infosList = new List<ContactUsInfo>();
+    protected ContactUs model = new ContactUs();
+    protected ContactUsInfo modelAdd = new ContactUsInfo();
+    protected ContactUsIcon modelIcon = new ContactUsIcon();
+    protected bool Collapsed = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (model.ContactUsInfo == null)
+        {
+            model.ContactUsInfo = new List<ContactUsInfo>();
+            modelAdd.ContactUsIcon = new ContactUsIcon();
+        }
+        iconsList = await ContactUsIconService.GetAllListAsync();
+
+        if (!Guid.Empty.Equals(Id))
+        {
+            model = await ContactUsService.GetById(Id);
+        }
+        else
+        {
+            modelAdd.ContactUsIcon = iconsList.FirstOrDefault();
+        }
+    }
+    private void HandleValidSubmit()
+    {
+        ContactUsService.Save(model);
+
+        NavigationManager.NavigateTo("/admin-contact-us");
+    }
+    protected async Task Delete(Guid contactUsId)
+    {
+        await ContactUsService.DeleteAsync(contactUsId);
+        categories = await ContactUsService.GetAllListAsync();
+        NavigationManager.NavigateTo("/admin-contact-us");
+        this.StateHasChanged();
+    }
+    private void Collaps()
+    {
+        Collapsed = !Collapsed;
+    }
+    private void HandleValidSubmitAdd()
+    {
+        if (modelAdd.Id == 0)
+        {
+            model.ContactUsInfo.Add(modelAdd);
+        }
+        else
+        {
+            model.ContactUsInfo.Where(i => i.Id == modelAdd.Id).SingleOrDefault().Name = modelAdd.Name;
+        }
+        modelAdd = new ContactUsInfo();
+        modelAdd.ContactUsIcon = iconsList.FirstOrDefault();
+        this.StateHasChanged();
+    }
+    protected void CheckIcon(int id)
+    {
+        modelAdd.ContactUsIcon = iconsList.Where(i => i.Id == id).FirstOrDefault();
+    }
+    protected void DeleteAdd(ContactUsInfo item)
+    {
+        model.ContactUsInfo.Remove(item);
+        this.StateHasChanged();
+    }
+    protected void EditAdd(ContactUsInfo item)
+    {
+        Collapsed = false;
+        modelAdd = item;
+        this.StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

@@ -1,0 +1,380 @@
+﻿@page "/edit-services"
+@page "/edit-services/{Id:guid}"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject AllModelService AllModelService
+@inject CategoryService CategoryService
+@using Microsoft.Extensions.Caching.Memory
+@inject IMemoryCache cache
+@inject ModelHairImageService ModelHairImageService
+
+
+@if (!Guid.Empty.Equals(Id))
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+            <li class="breadcrumb-item"><a href="/admin-services">Service</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Service</li>
+        </ol>
+    </nav>
+}
+else
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-3">
+            <li class="breadcrumb-item"><a href="/admin-services"> Service</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Service</li>
+        </ol>
+    </nav>
+}
+@*<EditForm Model="@model" OnValidSubmit="HandleValidSubmit" class="card-body shadow-primary-lg p-3 mb-5 rounded">
+        <DataAnnotationsValidator />
+        <div class="row">
+            <div class="ml-sm-3 m-auto">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <NavLink class="btn btn-outline-secondary" href="/admin-services">Cancel</NavLink>
+            </div>
+        </div>
+        <div>
+            <div class="row d-flex m-sm-3">
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-title">Category:<span style="color:red;">*</span></label>
+                    <div class="row">
+                        @foreach (var item in categories)
+                        {
+                            <div class="col-sm-2">
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input type="checkbox" checked="@checkCategories.Where(c=>c.Key==item.Id).SingleOrDefault().Value" @onclick="(() => checkCategory(item.Id))" id="checkbox_@item.Id" name="customCheckboxInline1" class="custom-control-input">
+                                    <label class="custom-control-label" for="checkbox_@item.Id">@item.Name</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label class="file-attachment-input" for="fileAttachmentInput">
+                        <img src="data:image/jpg;base64, @model.Image" class="img-thumbnail" alt="" />
+                        <small class="d-block text-muted">Maximum file size 2MB</small>
+                        <InputFile OnChange="HandleFileSelected" />
+                    </label>
+                    @if (ErrorMessage != "")
+                    {
+                        <label style="color:red">@ErrorMessage</label>
+                    }
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-title">Title:<span style="color:red;">*</span></label>
+                    <InputText id="title" @bind-Value="model.Title" class="form-control promotions-datepicker" />
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-description">Short Description:<span style="color:red;">*</span></label>
+                    <InputTextArea id="description" @bind-Value="model.ShortDescription" class="form-control" rows="7" />
+
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-description">Long Description:<span style="color:red;">*</span></label>
+                    <InputTextArea id="description" @bind-Value="model.LongDescription" class="form-control" rows="9" />
+
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-description">Skills:<span style="color:red;">*</span></label>
+                    <InputTextArea id="description" @bind-Value="model.Skills" class="form-control" rows="5" />
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-description">Project Url:<span style="color:red;">*</span></label>
+                    <InputTextArea id="description" @bind-Value="model.ProjectUrl" class="form-control" rows="5" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="ml-sm-3 m-auto p-4">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <NavLink class="btn btn-outline-secondary" href="/admin-services">Cancel</NavLink>
+            </div>
+            <div class="p-5">
+                <button type="button" class="btn btn-danger m-2" @onclick="(() => Delete(model.Id))">Delete</button>
+            </div>
+        </div>
+    </EditForm>*@
+
+<div class="card-body">
+    <div class="shadow-primary-lg p-3 mb-2 rounded">
+        <EditForm Model="@model" OnValidSubmit="HandleValidSubmit" class="body  p-3 mb-5 rounded ">
+            <DataAnnotationsValidator />
+            <div class="row">
+                <div class="ml-sm-3 m-auto">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <NavLink class="btn btn-outline-secondary" href="/admin-services">Cancel</NavLink>
+                </div>
+            </div>
+            <div class="row d-flex m-sm-3">
+                <div class="col-lg-12 form-group">
+                    <label for="category">Category:<span style="color:red;">*</span></label>
+                    <div class="row">
+                        @foreach (var item in categories)
+                        {
+                            <div class="col-sm-2">
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input type="checkbox" checked="@checkCategories.Where(c=>c.Key==item.Id).SingleOrDefault().Value" @onclick="(() => checkCategory(item.Id))" id="checkbox_@item.Id" name="customCheckboxInline1" class="custom-control-input">
+                                    <label class="custom-control-label" for="checkbox_@item.Id">@item.Name</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label class="file-attachment-input" for="fileAttachmentInput">
+                        <img src="data:image/jpg;base64, @model.Image" class="img-thumbnail" alt="" />
+                        <small class="d-block text-muted">Maximum file size 2MB</small>
+                        <InputFile OnChange="HandleFileSelected" />
+                    </label>
+                    @if (ErrorMessage != "")
+                    {
+                        <label style="color:red">@ErrorMessage</label>
+                    }
+                </div>
+                <hr />
+                <div class="col-lg-12 form-group">
+                    <label for="title">Title:<span style="color:red;">*</span></label>
+                    <InputText id="title" @bind-Value="model.Title" class="form-control promotions-datepicker" />
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="description">Short Description:<span style="color:red;">*</span></label>
+                    <InputTextArea id="description" @bind-Value="model.ShortDescription" class="form-control" rows="7" />
+
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="promotions-description">Long Description:<span style="color:red;">*</span></label>
+                    <InputTextArea id="description" @bind-Value="model.LongDescription" class="form-control" rows="9" />
+
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="skills">Skills:<span style="color:red;">*</span></label>
+                    <InputTextArea id="skills" @bind-Value="model.Skills" class="form-control" rows="5" />
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label for="project-url">Project Url:<span style="color:red;">*</span></label>
+                    <InputTextArea id="project-url" @bind-Value="model.ProjectUrl" class="form-control" rows="5" />
+                </div>
+            </div>
+
+            <h2>Additional Portfolio for Carousel:</h2>
+            <div>
+                <div class="text-left m-3">
+                    <button type="button" class="btn btn-primary mb-1" @onclick="Collaps">&nbsp;+&nbsp;</button>
+                </div>
+            </div>
+        </EditForm>
+        <div class="@(Collapsed? "collapse": "" )">
+            <EditForm Model="modelImage" OnValidSubmit="HandleValidSubmitCarousel" class="body  p-3 mb-5 rounded ">
+                <small class="d-block text-muted">Add only carousel in view portfolio</small>
+                <div class="col-lg-12 form-group">
+                    <label class="file-attachment-input" for="fileAttachmentInput">
+                        <img src="data:image/jpg;base64, @modelImage.Nmae" class="img-thumbnail" alt="" />
+                        <small class="d-block text-muted">Maximum file size 2MB</small>
+                        <InputFile OnChange="HandleFileSelectedCarousel" />
+                    </label>
+                    @if (ErrorMessage != "")
+                    {
+                        <label style="color:red">@ErrorMessage</label>
+                    }
+                </div>
+                <div class="row">
+                    <div class="ml-lg-3 m-3">
+                        @if (modelImage == null)
+                        {
+                            <button type="submit" class="btn btn-primary">Edit</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        }
+
+                        <NavLink class="btn btn-outline-secondary" href="/admin">Cancel</NavLink>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+        <div class="table-responsive-md u-datatable   p-3 mb-5 rounded">
+            <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+                <thead>
+                    <tr class="text-uppercase font-size-1 row">
+                        <th scope="col" class="font-weight-medium col-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                View Image
+                                <div class="ml-2">
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                @foreach (var item in model.ServiceImage)
+                {
+                    <tbody class="font-size-1">
+                        <tr class="row">
+                            <td class="col-1">
+                                <a class="btn btn-xs btn-icon btn-soft-secondary transition-3d-hover" href="javascript:;" @onclick="(() => EditAdd(item))" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">
+                                    <span class="fas fa-pen btn-icon__inner"></span>
+                                </a>
+                                <a type="button" class="btn btn-xs btn-icon btn-soft-danger" href="javascript:;" @onclick="(() => DeleteAdd(item))" disabled="">
+                                    <span class="fas fa-times btn-icon__inner"></span>
+                                </a>
+
+                            </td>
+                            <td class="col-1">
+                                <img src="data:image/jpg;base64, @item.Nmae" class="img-thumbnail" style="height:120px;width:840px;" alt="" />
+                            </td>
+                        </tr>
+                    </tbody>
+                }
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="ml-sm-3 m-auto">
+            <button type="button" @onclick="HandleValidSubmit" class="btn btn-primary">Save</button>
+            <NavLink class="btn btn-outline-secondary" href="/admin-services">Cancel</NavLink>
+        </div>
+        <div class="p-3">
+            <button type="button" class="btn btn-danger" @onclick="(() => Delete(model.Id))">Delete</button>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+    private IFileListEntry fileImage;
+
+
+    protected ModelService model = new ModelService();
+    protected Category categoryModel = new Category();
+    protected List<Category> categories = new List<Category>();
+    protected ServiceImage modelImage = new ServiceImage();
+    protected string ErrorMessage = "";
+    protected string CategoryId = "0";
+    protected bool Collapsed = true;
+    protected int categoryId { get; set; }
+    protected IDictionary<int, bool> checkCategories = new Dictionary<int, bool>();
+    protected IEnumerable<ModelService> modelService = new List<ModelService>();
+    protected IEnumerable<ServiceImage> listImages = new List<ServiceImage>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await CategoryService.GetAllListAsync();
+        foreach (var item in categories)
+        {
+            checkCategories.Add(item.Id, false);
+        }
+        if (!Guid.Empty.Equals(Id))
+        {
+            model = await AllModelService.GetById(Id);
+            if (model.ServiceCategories != null)
+            {
+                foreach (var item in model.ServiceCategories)
+                {
+                    var key = checkCategories.Where(c => c.Key == item.CategoryId).SingleOrDefault().Key;
+                    checkCategories[key] = true;
+                }
+            }
+        }
+    }
+    private void HandleValidSubmit()
+    {
+        var listCategory = checkCategories.Where(c => c.Value == true).Select(c => c.Key).ToList();
+        cache.Remove("KeyAdminAllService");
+        cache.Remove("KeyServicePage");
+        AllModelService.Save(model, listCategory);
+        NavigationManager.NavigateTo("/admin-services");
+    }
+    private void HandleValidSubmitCarousel()
+    {
+        if (modelImage.Id == 0)
+        {
+            model.ServiceImage.Add(modelImage);
+        }
+        else
+        {
+            model.ServiceImage.Where(p => p.Id == modelImage.Id).SingleOrDefault().Nmae = modelImage.Nmae;
+        }
+        modelImage = new ServiceImage();
+        this.StateHasChanged();
+    }
+    public async Task HandleFileSelected(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            ErrorMessage = "";
+            if (file.Size > 2097152)
+            {
+                ErrorMessage = "File size more 2 MB!";
+                this.ShouldRender();
+                return;
+            }
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms).ConfigureAwait(false);
+            ms.Position = 0;
+            model.Image = Convert.ToBase64String(ms.ToArray());
+            this.ShouldRender();
+        }
+    }
+    public async Task HandleFileSelectedCarousel(IFileListEntry[] files)
+    {
+        var fileImage = files.FirstOrDefault();
+        if (fileImage != null)
+        {
+            ErrorMessage = "";
+            if (fileImage.Size > 2097152)
+            {
+                ErrorMessage = "File size more 2 MB!";
+                this.ShouldRender();
+                return;
+            }
+            var ms = new MemoryStream();
+            await fileImage.Data.CopyToAsync(ms).ConfigureAwait(false);
+            ms.Position = 0;
+            modelImage.Nmae = Convert.ToBase64String(ms.ToArray());
+            this.ShouldRender();
+        }
+    }
+
+    protected async void DeleteAdd(ServiceImage item)
+    {
+        await ModelHairImageService.DeleteAsync(item.Id);
+        this.StateHasChanged();
+    }
+
+    protected void EditAdd(ServiceImage item)
+    {
+        Collapsed = false;
+        modelImage = item;
+        this.StateHasChanged();
+    }
+    public void checkCategory(int id)
+    {
+        var check = checkCategories.Where(c => c.Key == id).SingleOrDefault().Value;
+        checkCategories[id] = !check;
+        this.ShouldRender();
+    }
+    protected async Task Delete(Guid id)
+    {
+        await AllModelService.DeleteAsync(id);
+        modelService = await AllModelService.GetAllListAsync();
+        NavigationManager.NavigateTo("/admin-services");
+        this.StateHasChanged();
+    }
+    private void Collaps()
+    {
+        Collapsed = !Collapsed;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

@@ -1,0 +1,211 @@
+﻿@layout MainLayout
+@page "/price-massage"
+@inject IJSRuntime JSRuntime
+@inject PriceMassageService PriceMassageService
+@inject MassageService MassageService
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Price Massage</li>
+    </ol>
+</nav>
+<div class="dzsparallaxer auto-init height-is-based-on-content use-loading mode-scroll animation-engine-js loaded dzsprx-readyall" data-options="{direction: &quot;normal&quot;}">
+    <!-- Apply your Parallax background image here -->
+    <div class="divimage dzsparallaxer--target" style="height: 130%; background-image: url(&quot;./fotos/image2/8.jpg&quot;); transform: translate3d(0px, -55.5068px, 0px);"></div>
+
+    <!-- Content -->
+
+    <div class="container space-2 space-md-3">
+        <div class="text-center w-lg-80 mx-auto">
+            <h1 class="text-white display-1 font-size-md-down-5 font-weight-semi-bold " style="font-family:consolas ">Therapeutic Massage</h1>
+        </div>
+        <div class="text-center w-lg-40 mx-auto">
+            <p class="lead text-white-70" style="font-family:consolas ">Members get $15 Off 60min Massages, $25 Off 90min+ Massages</p>
+        </div>
+    </div>
+    <!-- End Content -->
+</div>
+<div class="container space-top-sm-3 space-bottom-sm-2 space-bottom-sm-2">
+    <div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+        <h3 class="text-sm-center" style="font-family:consolas"> Massage  Level 1 Prices Start At</h3>
+        <table class="table table-bordered table-striped  table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounde">
+            <thead>
+                <tr class="text-uppercase font-size-1 text-sm-center">
+                    <th scope="col" class="font-weight-medium">
+                        <div class="justify-content-between align-items-center" style="font-family:consolas">
+                            Description
+                            <div class="ml-2">
+                            </div>
+                        </div>
+                    </th>
+                    <th scope="col" class="font-weight-medium">
+                        <div class=" justify-content-between align-items-center" style="font-family:consolas">
+                            Price
+                            <div class="ml-2">
+                            </div>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            @foreach (var item in listPsrice)
+            {
+                <tbody class="font-size-1">
+                    <tr>
+                        <td class="align-middle text-sm-center" style="font-family:consolas">@item.Description</td>
+                        <td class="align-middle text-sm-center" style="font-family:consolas"><span class="oi oi-dollar"></span>@item.Price</td>
+                    </tr>
+                </tbody>
+            }
+        </table>
+    </div>
+</div>
+<div class="container space-top-0 space-bottom-md-1 space-bottom-0">
+    <div class="row">
+        <div class="col navMenu">
+            <h2 class="text-center">Our specialists will take care of you.</h2>
+        </div>
+        <br />
+        <div class="col-12 text-center">
+            <a class="btn btn-outline-success mb-3 mr-1" href="#carouselExampleIndicators2" role="button" data-slide="prev">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <a class="btn btn-outline-success mb-3 " href="#carouselExampleIndicators2" role="button" data-slide="next">
+                <i class="fa fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="col-12">
+            <div id="carouselExampleIndicators2" class="carousel slide text-center" data-ride="carousel">
+
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row justify-content-center">
+                            @foreach (var item in massageList.Take(3))
+                            {
+                                <div class="card-deck card-sm-gutters-3 d-block d-sm-flex col-md-4 col-sm-offset-8 col-xs-12 text-center padding wow fadeIn service-item  p-3 mb-5 rounded card-sm-gutters-1 d-block d-sm-flex">
+                                    <div class="card mb-3">
+                                        <img src="data:image/jpg;base64, @item.Image" class="img-thumbnail text-right" alt="" />
+                                        <div class="card-body ">
+                                            <h5 class="card-title">@item.Title</h5>
+                                            <p class="card-text">@item.ShortDescription</p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <a class="btn btn-outline-primary text-center m-1" href="massage-all">Read more</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row justify-content-center">
+
+                            @foreach (var item in massageList.Skip(3).Take(3))
+                            {
+                                <div class="card-deck card-sm-gutters-3 d-block d-sm-flex col-md-4 col-sm-offset-8 col-xs-12 text-center padding wow fadeIn service-item  p-3 mb-5 rounded card-sm-gutters-1 d-block d-sm-flex">
+                                    <div class="card mb-3">
+                                        <img src="data:image/jpg;base64, @item.Image" class="img-thumbnail text-right" alt="" />
+                                        <div class="card-body ">
+                                            <h5 class="card-title">@item.Title</h5>
+                                            <p class="card-text">@item.ShortDescription</p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <a class="btn btn-outline-primary text-center m-1" href="massage-all">Read more</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row justify-content-center">
+
+                            @foreach (var item in massageList.Skip(6).Take(3))
+                            {
+                                <div class="card-deck card-sm-gutters-3 d-block d-sm-flex col-md-4 col-sm-offset-8 col-xs-12 text-center padding wow fadeIn service-item  p-3 mb-5 rounded card-sm-gutters-1 d-block d-sm-flex">
+                                    <div class="card mb-3">
+                                        <img src="data:image/jpg;base64, @item.Image" class="img-thumbnail text-right" alt="" />
+                                        <div class="card-body ">
+                                            <h5 class="card-title">@item.Title</h5>
+                                            <p class="card-text">@item.ShortDescription</p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <a class="btn btn-outline-primary text-center m-1" href="massage-all">Read more</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                    @*<div class="carousel-item">
+                        <div class="row justify-content-center">
+
+                            @foreach (var item in massageList.Skip(9).Take(3))
+                            {
+                                <div class="card-deck card-sm-gutters-3 d-block d-sm-flex col-md-4 col-sm-offset-8 col-xs-12 text-center padding wow fadeIn service-item  p-3 mb-5 rounded card-sm-gutters-1 d-block d-sm-flex">
+                                    <div class="card mb-3">
+                                        <img src="data:image/jpg;base64, @item.Image" class="img-thumbnail text-right" alt="" />
+                                        <div class="card-body ">
+                                            <h5 class="card-title">@item.Title</h5>
+                                            <p class="card-text">@item.ShortDescription</p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <a class="btn btn-outline-primary text-center m-1" href="employee/@item.Id">Read more</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="wpb_wrapper">
+    <div class="vc_row wpb_row section vc_row-fluid vc_inner " style=" text-align:left;">
+        <div class=" full_section_inner clearfix">
+            <div class="wpb_column vc_column_container vc_col-sm-12">
+                <div class="vc_column-inner">
+                    <div class="wpb_wrapper m-4">
+                        <div class="wpb_text_column wpb_content_element  spaces">
+                            <div class="wpb_wrapper">
+                                <h6 data-fontsize="18" data-lineheight="30" style="font-family:consolas">We operate on a&nbsp;<em>“Level”</em>&nbsp;system as a way to retain, reward, and recruit our talented staff. As someone grows with our company, they&nbsp;<em>“Level Up”</em>&nbsp;and their prices go up by $4/hour.</h6>
+                                <h6 data-fontsize="18" data-lineheight="30" style="font-family:consolas">Masters of their craft deserve it.</h6>
+                                <h6 data-fontsize="18" data-lineheight="30" style="font-family:consolas">Everyone here is a licensed professional, and passionate about their career. Levels do not reflect years of experience, they reflect consistent positive results and dedication to our Spa Tribe. If you are interested in our services, please <a href="https://foxriverspa.com/contact/">contact us</a> at one of our two locations in Carpentersville&nbsp; <a class="anotherlink" href="tel:380930901184">3809309000000</a> or Lviv <a class="anotherlink" href="tel:380930900000">380930900000</a></h6>
+                                <h6 data-fontsize="18" data-lineheight="30" style="font-family:consolas">Please take some time to look at some of Beauty Salon reviews in <a href="https://www.google.com/search?rlz=1C5CHFA_enUS750US750&amp;ei=nbRPXuLZNYOosgXy5oK4BA&amp;q=fox+river+spa+carpentersville+il&amp;oq=fox+river+spa+carpentersville+il&amp;gs_l=psy-ab.3..0j0i22i30l3j0i333.55953.57866..58042...0.2..0.114.1774.11j7......0....1..gws-wiz.......0i71.MsyqSVPjU0g&amp;ved=0ahUKEwiinPitu-LnAhUDlKwKHXKzAEcQ4dUDCAs&amp;uact=5#lrd=0x880f0e4c64304bb1:0x19d1c05c95ed067,1,,,">Kyiv</a> or <a href="https://www.google.com/search?q=fox+river+spa+algonquin+il&amp;rlz=1C5CHFA_enUS750US750&amp;oq=fox+river+spa+algonquin+il&amp;aqs=chrome..69i57j0l4j69i60l3.5183j0j7&amp;sourceid=chrome&amp;ie=UTF-8#lrd=0x880f1204d5d6052d:0x636bfc5d6fb0fbe3,1,,,">Lviv</a>.</h6>
+                                <h6 data-fontsize="18" data-lineheight="30" style="font-family:consolas"></h6>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    protected List<PriceMassage> listPsrice = new List<PriceMassage>();
+    protected List<MassageAllModel> massageList = new List<MassageAllModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        listPsrice = await PriceMassageService.GetAllListAsync();
+        massageList = await MassageService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

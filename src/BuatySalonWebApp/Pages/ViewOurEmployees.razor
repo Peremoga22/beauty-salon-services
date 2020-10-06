@@ -1,0 +1,44 @@
+﻿@page "/employee"
+@page "/employee/{Id:int}"
+@inject IJSRuntime JSRuntime
+@inject OurEmployeesService OurEmployeesService
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter m-lg-4 p-3">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@model.Title</li>
+    </ol>
+</nav>
+<div class="container space-bottom-2">
+    <div class="w-lg-40 mx-lg-auto">
+        <div class="card shadow-sm p-3">
+            <h1 class="h2 font-weight-medium text-center">@model.Title</h1>
+            <img src="data:image/jpg;base64, @model.Photo" class="img-thumbnail text-right" alt="" />
+            <br />
+            <p>@model.Description</p>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    public OurEmployee model = new OurEmployee();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id!=0)
+        {
+            model = await OurEmployeesService.GetById(Id);
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+            await JSRuntime.InvokeVoidAsync("setTitle", "Beauty Salon - View Nails");
+        }
+    }
+}

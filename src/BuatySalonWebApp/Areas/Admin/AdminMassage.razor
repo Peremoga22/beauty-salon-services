@@ -1,0 +1,203 @@
+﻿@page "/admin-massage-all"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject MassageService MassageService
+@inject CategoryAllMassageService CategoryAllMassageService
+@using Microsoft.Extensions.Caching.Memory
+@inject IMemoryCache cache
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Massage</li>
+    </ol>
+</nav>
+<div class="text-left m-1">
+    <NavLink class="btn btn-primary mb-1" href="/edit-massage-services"> &nbsp;+&nbsp;</NavLink>
+</div>
+<div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+    <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+        <thead>
+            <tr class="text-uppercase font-size-1">
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Title
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.Title))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.Title))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Image
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.Image))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.Image))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Short Description
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.ShortDescription))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.ShortDescription))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Long Description
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.LongDescription))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.LongDescription))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+
+            </tr>
+        </thead>
+        @foreach (var item in massageAllModels)
+        {
+            <tbody class="font-size-1">
+                <tr>
+                    <td>
+                        <a type="button" title="move up" class="fas fa-angle-up u-datatable__thead-icon" @onclick="(() =>MovedNumberUp(item.Id))"></a>
+                        <a type="button" title="move down" class="fas fa-angle-down u-datatable__thead-icon" @onclick="(() =>MovedNumberDown(item.Id))"> </a>
+                    </td>
+                    <td class="align-middle font-weight-normal" @onclick="(() => EditAdminMassage(item.Id))">@item.Title</td>
+                    <td class="align-middle" @onclick="(() => EditAdminMassage(item.Id))"> <img src="data:image/jpg;base64, @item.Image" class="img-thumbnail" style="height:120px;width:240px;" alt="" /></td>
+                    <td class="align-middle" @onclick="(() => EditAdminMassage(item.Id))">@item.ShortDescription</td>
+                    <td class="align-middle" @onclick="(() => EditAdminMassage(item.Id))">@item.LongDescription</td>
+                    <td class="btn btn-primary text-center m-1" @onclick="(()=> hrefHeader())">View</td>
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>
+
+@code {
+    protected IEnumerable<MassageAllModel> massageAllModels = new List<MassageAllModel>();
+    protected IEnumerable<CategoryMassageModel> categories = new List<CategoryMassageModel>();
+    protected MassageAllModel model = new MassageAllModel();
+    protected CategoryAllNailsModel category = new CategoryAllNailsModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var value = cache.Get<List<MassageAllModel>>("KeyAdminMassagePage");
+        if (value == null)
+        {
+            massageAllModels = await MassageService.GetAllListAsync();
+            cache.Set("KeyAdminMassagePage", massageAllModels);
+        }
+        else
+        {
+            massageAllModels = value;
+            massageAllModels = await MassageService.GetAllListAsync();
+            cache.Set("KeyAdminMassagePage", massageAllModels);
+        }
+        categories = await CategoryAllMassageService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+    protected void EditAdminMassage(Guid id)
+    {
+        NavigationManager.NavigateTo("/edit-massage-services/" + id);
+    }
+
+    protected async void MovedNumberUp(Guid id)
+    {
+        var temp = massageAllModels.Where(p => p.Id == id).SingleOrDefault().SortNumber;
+        if (temp - 1 > 0)
+        {
+            massageAllModels.Where(p => p.SortNumber == temp - 1).SingleOrDefault().SortNumber = temp;
+            massageAllModels.Where(p => p.Id == id).SingleOrDefault().SortNumber = temp - 1;
+            var el1 = massageAllModels.Where(p => p.SortNumber == temp).SingleOrDefault();
+            MassageService.SaveMassageAdmin(el1);
+            var el2 = massageAllModels.Where(p => p.Id == id).SingleOrDefault();
+            MassageService.SaveMassageAdmin(el2);
+        }
+        await OnInitializedAsync();
+    }
+
+    protected async void MovedNumberDown(Guid id)
+    {
+        var temp = massageAllModels.Where(p => p.Id == id).SingleOrDefault().SortNumber;
+        if (temp + 1 <= massageAllModels.Count())
+        {
+            massageAllModels.Where(p => p.SortNumber == temp + 1).SingleOrDefault().SortNumber = temp;
+            massageAllModels.Where(p => p.Id == id).SingleOrDefault().SortNumber = temp + 1;
+            var el1 = massageAllModels.Where(p => p.SortNumber == temp).SingleOrDefault();
+            MassageService.SaveMassageAdmin(el1);
+            var el2 = massageAllModels.Where(p => p.Id == id).SingleOrDefault();
+            MassageService.SaveMassageAdmin(el2);
+        }
+        await OnInitializedAsync();
+    }
+    protected void SortTableUp(ColName colName)
+    {
+        switch (colName)
+        {
+            case ColName.Title:
+                massageAllModels = massageAllModels.OrderBy(t => t.Title);
+                break;
+
+            case ColName.Image:
+                massageAllModels = massageAllModels.OrderBy(t => t.Image);
+                break;
+
+            case ColName.ShortDescription:
+                massageAllModels = massageAllModels.OrderBy(t => t.ShortDescription);
+                break;
+
+            case ColName.LongDescription:
+                massageAllModels = massageAllModels.OrderBy(t => t.LongDescription);
+                break;
+
+            default: break;
+        }
+        this.StateHasChanged();
+    }
+    protected void SortTableDown(ColName colName)
+    {
+        switch (colName)
+        {
+            case ColName.Title:
+                massageAllModels = massageAllModels.OrderByDescending(t => t.Title);
+                break;
+
+            case ColName.Image:
+                massageAllModels = massageAllModels.OrderByDescending(t => t.Image);
+                break;
+
+            case ColName.ShortDescription:
+                massageAllModels = massageAllModels.OrderByDescending(t => t.ShortDescription);
+                break;
+
+            case ColName.LongDescription:
+                massageAllModels = massageAllModels.OrderByDescending(t => t.LongDescription);
+                break;
+
+            default: break;
+        }
+        this.StateHasChanged();
+    }
+    protected enum ColName
+    {
+        Title = 1,
+        Image,
+        ShortDescription,
+        LongDescription
+    }
+    protected void hrefHeader()
+    {
+        NavigationManager.NavigateTo("/massage-all");
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

@@ -1,0 +1,83 @@
+﻿@page "/edit-category-all-nails"
+@page "/edit-category-all-nails/{Id:int}"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject CategoryAllNailsService CategoryAllNailsService
+
+
+@if (Id == 0)
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+            <li class="breadcrumb-item"><a href="/admin-category-all-nails">Category Nails</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Category Nails</li>
+        </ol>
+    </nav>
+}
+else
+{
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-3">
+            <li class="breadcrumb-item"><a href="/admin-category-all-nails"> Categor Nailsy</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Category Nails</li>
+        </ol>
+    </nav>
+}
+<EditForm Model="@model" OnValidSubmit="HandleValidSubmit" class="card-body shadow-primary-lg p-3 mb-5 rounded">
+    <DataAnnotationsValidator />
+    <div>
+        <div class="row d-flex">
+            <div class="col-lg-12 form-group">
+                <label for="promotions-title">Categories:<span style="color:red;">*</span></label>
+                <InputText id="category" @bind-Value="model.Name" class="form-control promotions-datepicker" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="ml-sm-3 m-auto">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <NavLink class="btn btn-outline-secondary" href="/admin-category-all-nails">Cancel</NavLink>
+        </div>
+        <div class="p-3">
+            <button type="button" class="btn btn-danger m-2" @onclick="(() => Delete(model.Id))">Delete</button>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private IEnumerable<CategoryAllNailsModel> categories = new List<CategoryAllNailsModel>();
+    protected CategoryAllNailsModel model = new CategoryAllNailsModel();
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id != 0)
+        {
+            model = await CategoryAllNailsService.GetById(Id);
+        }
+        model.NailsAllModelCategories = new List<NailsAllModelCategoryAllNailsModel>();
+    }
+    private void HandleValidSubmit()
+    {
+        CategoryAllNailsService.Save(model);
+        NavigationManager.NavigateTo("/admin-category-all-nails");
+    }
+    protected async Task Delete(int categoryId)
+    {
+
+        await CategoryAllNailsService.DeleteAsync(categoryId);
+        categories = await CategoryAllNailsService.GetAllListAsync();
+        NavigationManager.NavigateTo("/admin-category-all-nails");
+        this.StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

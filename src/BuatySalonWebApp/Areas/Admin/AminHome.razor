@@ -1,0 +1,214 @@
+﻿@page "/admin-home"
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject FashionService FashionService
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.Extensions.Caching.Memory
+@inject IMemoryCache cache
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Fashion</li>
+    </ol>
+</nav>
+<div>
+    <div class="text-left m-1">
+        <NavLink class="btn btn-primary mb-1" href="/edit-fashion">&nbsp;+&nbsp;</NavLink>
+    </div>
+</div>
+<div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+    <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+        <thead>
+            <tr class="text-uppercase font-size-1">
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Title
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.Title))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.Title))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Image
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.Image))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.Image))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Short Description
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.ShortDescription))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.ShortDescription))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Long Description
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.LongDescription))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.LongDescription))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="font-weight-medium">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Action
+                        <div class="ml-2">
+                            <span @onclick="(() =>SortTableUp(ColName.LongDescription))" class="fas fa-angle-up u-datatable__thead-icon"></span>
+                            <span @onclick="(() =>SortTableDown(ColName.LongDescription))" class="fas fa-angle-down u-datatable__thead-icon"></span>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        @foreach (var item in modelServices)
+        {
+            <tbody class="font-size-1">
+                <tr>
+                    <td>
+                        <a type="button" title="move up" class="fas fa-angle-up u-datatable__thead-icon" @onclick="(() =>MovedNumberUp(item.Id))"></a>
+                        <a type="button" title="move down" class="fas fa-angle-down u-datatable__thead-icon" @onclick="(() =>MovedNumberDown(item.Id))"> </a>
+                    </td>
+                    <td class="align-middle font-weight-normal" @onclick="(() => EditAdminFashion(item.Id))">@item.Title</td>
+                    <td class="align-middle" @onclick="(() => EditAdminFashion(item.Id))"> <img src="data:image/jpg;base64, @item.Image" class="img-thumbnail" style="height:120px;width:840px;" alt="" /></td>
+                    <td class="align-middle " @onclick="(() => EditAdminFashion(item.Id))">
+                        @item.ShortDescription
+                    </td>
+                    <td class="align-middle" @onclick="(() => EditAdminFashion(item.Id))">@item.LongDescription</td>
+                    <td class="btn btn-primary text-center m-1" @onclick="(()=> hrefHeader())">View</td>
+                </tr>
+
+            </tbody>
+        }
+    </table>
+</div>
+
+
+@code {
+
+    protected IEnumerable<Fashion> modelServices = new List<Fashion>();
+    protected Fashion model = new Fashion();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var value = cache.Get<List<Fashion>>("KeyAdminFashionPage");
+        if(value == null)
+        {
+            modelServices = await FashionService.GetAllListAync();
+            cache.Set("KeyAdminFashionPage", modelServices);
+        }
+        else
+        {
+            modelServices = value;
+            modelServices = await FashionService.GetAllListAync();
+            cache.Set("KeyAdminFashionPage", modelServices);
+        }
+        this.StateHasChanged();
+
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+    protected void hrefHeader()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+    protected void EditAdminFashion(Guid id)
+    {
+        NavigationManager.NavigateTo("/edit-home/" + id);
+    }
+    protected async void MovedNumberUp(Guid id)
+    {
+        var temp = modelServices.Where(p => p.Id == id).SingleOrDefault().SortNumber;
+        if (temp - 1 > 0)
+        {
+            modelServices.Where(p => p.SortNumber == temp - 1).SingleOrDefault().SortNumber = temp;
+            modelServices.Where(p => p.Id == id).SingleOrDefault().SortNumber = temp - 1;
+            var el1 = modelServices.Where(p => p.SortNumber == temp).SingleOrDefault();
+            FashionService.Save(el1);
+            var el2 = modelServices.Where(p => p.Id == id).SingleOrDefault();
+            FashionService.Save(el2);
+        }
+        await OnInitializedAsync();
+    }
+    protected async void MovedNumberDown(Guid id)
+    {
+        var temp = modelServices.Where(p => p.Id == id).SingleOrDefault().SortNumber;
+        if (temp + 1 <= modelServices.Count())
+        {
+            modelServices.Where(p => p.SortNumber == temp + 1).SingleOrDefault().SortNumber = temp;
+            modelServices.Where(p => p.Id == id).SingleOrDefault().SortNumber = temp + 1;
+            var el1 = modelServices.Where(p => p.SortNumber == temp).SingleOrDefault();
+            FashionService.Save(el1);
+            var el2 = modelServices.Where(p => p.Id == id).SingleOrDefault();
+            FashionService.Save(el2);
+        }
+        await OnInitializedAsync();
+    }
+    protected void SortTableUp(ColName colName)
+    {
+        switch (colName)
+        {
+            case ColName.Title:
+                modelServices = modelServices.OrderBy(t => t.Title);
+                break;
+
+            case ColName.Image:
+                modelServices = modelServices.OrderBy(t => t.Image);
+                break;
+
+            case ColName.ShortDescription:
+                modelServices = modelServices.OrderBy(t => t.ShortDescription);
+                break;
+
+            case ColName.LongDescription:
+                modelServices = modelServices.OrderBy(t => t.LongDescription);
+                break;
+
+            default: break;
+        }
+        this.StateHasChanged();
+    }
+    protected void SortTableDown(ColName colName)
+    {
+        switch (colName)
+        {
+            case ColName.Title:
+                modelServices = modelServices.OrderByDescending(t => t.Title);
+                break;
+
+            case ColName.Image:
+                modelServices = modelServices.OrderByDescending(t => t.Image);
+                break;
+
+            case ColName.ShortDescription:
+                modelServices = modelServices.OrderByDescending(t => t.ShortDescription);
+                break;
+
+            case ColName.LongDescription:
+                modelServices = modelServices.OrderByDescending(t => t.LongDescription);
+                break;
+
+            default: break;
+        }
+        this.StateHasChanged();
+    }
+    protected enum ColName
+    {
+        Title = 1,
+        Image,
+        ShortDescription,
+        LongDescription
+    }
+}

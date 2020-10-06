@@ -1,0 +1,181 @@
+﻿@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+
+
+<header id="header" class="u-header u-header--abs-top-md u-header--show-hide-md"
+        data-header-fix-moment="500"
+        data-header-fix-effect="slide">
+    <div class="u-header__section">
+        <div id="logoAndNav" class="container  col-12 col-sm-12 col-md-12 col-xl-12">
+            <nav class="js-mega-menu navbar navbar-expand-md u-header__navbar u-header__navbar--no-space ">
+                <img src="@("./fotos/logo/logo" + RandomImage() + ".jpg")" style="height:70px;width:40px;" class="col-sm-1 m-lg-3 collapse navbar-collapse u-header__navbar-collapse" />
+                <a class="navbar-brand col-2 u-header__navbar-brand u-header__navbar-brand-center" href="/">
+                    <span class="u-header__navbar-brand-text navbar-expand-lg">Beauty Salon</span>
+                </a>
+                <button type="button" class="navbar-toggler btn u-hamburger"
+                        aria-label="Toggle navigation"
+                        aria-expanded="false"
+                        aria-controls="navBar"
+                        data-toggle="collapse"
+                        data-target="#navBar">
+                    <span id="hamburgerTrigger" class="u-hamburger__box">
+                        <span class="u-hamburger__inner"></span>
+                    </span>
+                </button>
+                <div id="navBar" class="@NavMenuCssClass collapse navbar-collapse u-header__navbar-collapse" @onclick="ToggleNavMenu">
+                    <ul class="navbar-nav u-header__navbar-nav">
+                        <li class="nav-item hs-has-sub-menu u-header__nav-item  p-3"
+                            data-event="hover"
+                            data-animation-in="slideInUp"
+                            data-animation-out="fadeOut">
+                            <a id="pagesMegaMenu" class="nav-link u-header__nav-link-toggle" href="javascript:;" aria-haspopup="true" aria-expanded="false" aria-labelledby="pagesSubMenu">Home</a>
+                            <ul id="pagesSubMenu" class="hs-sub-menu u-header__sub-menu" aria-labelledby="pagesMegaMenu" style="min-width: 180px;">
+                                <NavLink class="nav-link" href="/admin-users">
+                                    <span class="active p-3" aria-hidden="true">Users</span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-home">
+                                    <span class="active p-3" aria-hidden="true">Index</span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-nails-all">
+                                    <span class="active p-3" aria-hidden="true">Nails</span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-category-all-nails">
+                                    <span class="active p-3" aria-hidden="true">Category Nails</span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-our-employees">
+                                    <span class="active p-3" aria-hidden="true">OurEmployees</span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-category-all-massage">
+                                    <span class="active p-3" aria-hidden="true">CategoryMassage</span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-massage-all">
+                                    <span class="active p-3" aria-hidden="true">Massage</span>
+                                </NavLink>
+                            </ul>
+                        </li>                    
+                        <li class="nav-item hs-has-sub-menu u-header__nav-item  p-3"
+                            data-event="hover"
+                            data-animation-in="slideInUp"
+                            data-animation-out="fadeOut">
+                            <a id="pagesMegaMenu" class="nav-link u-header__nav-link-toggle" href="javascript:;" aria-haspopup="true" aria-expanded="false" aria-labelledby="pagesSubMenu">Service</a>
+                            <ul id="pagesSubMenu" class="hs-sub-menu u-header__sub-menu" aria-labelledby="pagesMegaMenu" style="min-width: 180px;">
+                                <NavLink class="nav-link" href="/admin-services">
+                                    <span class="active p-3" aria-hidden="true">Page Service</span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-category">
+                                    <span class="active p-3" aria-hidden="true">Category</span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-price-massage">
+                                    <span class="active p-3" aria-hidden="true">Price Massage</span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-price-hair">
+                                    <span class="active p-3" aria-hidden="true">Price Hairstyle</span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-price-nail">
+                                    <span class="active p-3" aria-hidden="true">Price Nailstyle</span>
+                                </NavLink>
+                            </ul>
+                        </li>
+                        <NavLink class="nav-link" href="shares">
+                            <span class="active p-4" aria-hidden="true">Shares</span>
+                        </NavLink>
+                        <li class="nav-item hs-has-sub-menu u-header__nav-item  p-3"
+                            data-event="hover"
+                            data-animation-in="slideInUp"
+                            data-animation-out="fadeOut">
+                            <a id="pagesMegaMenu" class="nav-link u-header__nav-link-toggle" href="javascript:;" aria-haspopup="true" aria-expanded="false" aria-labelledby="pagesSubMenu">Contact Us</a>
+                            <ul id="pagesSubMenu" class="hs-sub-menu u-header__sub-menu" aria-labelledby="pagesMegaMenu" style="min-width: 180px;">
+                                <NavLink class="nav-link" href="/admin-contact-us">
+                                    <span class="active p-3" aria-hidden="true">Page Contact </span>
+                                </NavLink>
+                                <NavLink class="nav-link" href="/admin-contact-us-icons">
+                                    <span class="active p-3" aria-hidden="true">Icons</span>
+                                </NavLink>
+                            </ul>
+                        </li>
+                        <NavLink class="nav-link" href="admin-faq">
+                            <span class="active p-4" aria-hidden="true">FAQ</span>
+                        </NavLink>
+                        <NavLink class="nav-link" href="/order">
+                            <span class="active p-4" aria-hidden="true">Order</span>
+                        </NavLink>                      
+                        <AuthorizeView>
+                            <Authorized>
+                                <form method="post" action="Identity/Account/LogOut">
+                                    <button type="submit" class="nav-link btn btn-link">Log out</button>
+                                </form>
+                            </Authorized>
+                            <NotAuthorized>
+                                <a href="Identity/Account/Login" class="p-3 m-1" aria-haspopup="true" aria-expanded="false">Log in</a>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+    protected void hrefHeader(HrefName hrefName)
+    {
+        switch (hrefName)
+        {
+            case HrefName.Index:
+                NavigationManager.NavigateTo("/");
+                break;
+
+            case HrefName.Portfolio:
+                NavigationManager.NavigateTo("/allPortfolio");
+                break;
+
+            case HrefName.Service:
+                NavigationManager.NavigateTo("/services");
+                break;
+
+            case HrefName.ContactUs:
+                NavigationManager.NavigateTo("/adminContactUs");
+                break;
+
+            case HrefName.Faq:
+                NavigationManager.NavigateTo("/adminFaq");
+                break;
+
+            default: break;
+        }
+    }
+    protected enum HrefName
+    {
+        Index,
+        Portfolio,
+        Service,
+        ContactUs,
+        Faq
+    }
+    protected string RandomImage()
+    {
+        Random rand = new Random();
+
+        var img = rand.Next(1, 9);
+        return img.ToString();
+    }
+}
+
+
+

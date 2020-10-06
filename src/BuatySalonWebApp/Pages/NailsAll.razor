@@ -1,0 +1,89 @@
+﻿@layout MainLayout
+@page "/nails-all"
+@inject IJSRuntime JSRuntime
+@inject CategoryAllNailsService CategoryAllNailsService
+@inject NailsAllService NailsAllService
+@using Microsoft.Extensions.Caching.Memory
+@inject IMemoryCache cache
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+            <li class="breadcrumb-item active" aria-current="page">Nails</li>
+        </ol>
+    </nav>
+    <div class="container col-10 col-sm-12 ">
+        <div class="row d-flex  justify-content-center m-6 m-sm-12">
+            @foreach (var item in categories)
+            {
+                @if (selectCategoryId == item.Id)
+                {
+                    <button type="button" @onclick="(() => getByCategory(item.Id))" class="btn  btn-primary text-center m-1"disabled=@IsTaskRunning>@item.Name</button>
+                }
+                else
+                {
+                    <button type="button" @onclick="(() => getByCategory(item.Id))" class="btn btn-outline-primary text-center m-1"disabled=@IsTaskRunning>@item.Name</button>
+                }
+            }
+        </div>
+    </div>   
+    <div class="container col-10 col-sm-12  ">
+        <div class="row d-flex  justify-content-center m-sm-12">
+            @foreach (var item in nailsAlls)
+            {
+                <div class="card-deck card-sm-gutters-3 d-block d-sm-flex col-md-4 col-sm-offset-8 col-xs-12 text-center padding wow fadeIn service-item  p-3 mb-5 rounded card-sm-gutters-1 d-block d-sm-flex">
+                    <div class="card shadow-lg h-100 mb-3">
+                        <img src="data:image/jpg;base64, @item.Image" class="img-thumbnail text-right" style="margin-right:auto;margin-left:auto; width:100%" alt="" />
+                        <div class="card-body ">
+                            <h5 class="card-title">@item.Title</h5>
+                            <p class="card-text">@item.ShortDescription</p>
+                        </div>
+                        <div class="card-footer">
+                            <a class="btn btn-outline-primary text-center m-1" href="/nails/@item.Url">Read more</a>                         
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+@code {
+    protected CategoryAllNailsModel model = new CategoryAllNailsModel();
+    protected List<CategoryAllNailsModel> categories = new List<CategoryAllNailsModel>();
+    protected List<NailsAllModel> nailsAlls = new List<NailsAllModel>();
+    protected int selectCategoryId = 0;
+    bool IsTaskRunning = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var value = cache.Get<List<NailsAllModel>>("KeyNailsPage");
+        if (value == null)
+        {
+            nailsAlls = await NailsAllService.GetAllListAsync();
+            cache.Set("KeyNailsPage", nailsAlls);
+        }
+        else
+        {
+            nailsAlls = value;
+        }
+        categories = await CategoryAllNailsService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+
+    protected async Task getByCategory(int id)
+    {
+        IsTaskRunning = true;
+        selectCategoryId = id;
+        nailsAlls = await NailsAllService.GetCategoryIdAsync(id);
+        IsTaskRunning = false;
+        this.StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+            await JSRuntime.InvokeVoidAsync("setTitle", "Beauty Salon - Nails");
+        }
+    }
+}

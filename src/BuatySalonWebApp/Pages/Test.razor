@@ -1,0 +1,390 @@
+﻿@layout MainLayout
+@page "/test"
+@inject IJSRuntime JSRuntime
+@attribute [Authorize(Roles = "User")]
+
+
+    <div class="bg-light">
+        <div class="text-left">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-no-gutter  m-lg-2 p-3">
+                    <li class="breadcrumb-item active" aria-current="page">Test</li>
+                </ol>
+            </nav>
+        </div>
+        <img  class="d-block w-100"  src="https://de927adv5b23k.cloudfront.net/wp-content/uploads/2017/09/25220931/shutterstock_370490774.jpg" alt="Переглянути вихідне зображення" />
+        @*<div class="container space-2 space-md-3">
+            <div class="w-md-80 w-lg-50 text-center mx-md-auto">
+                <figure id="embedIcon" class="mb-3">
+                <img class="js-svg-injector" src="./assets/svg/icons/icon-62.svg" style="height:90px;width:90px;" alt="SVG" data-parent="#embedIcon">
+            </figure>
+                <img src="https://de927adv5b23k.cloudfront.net/wp-content/uploads/2017/09/25220931/shutterstock_370490774.jpg" alt="Переглянути вихідне зображення" />
+
+                <div class="mb-5">
+                    <h2 class="h3 font-weight-medium">To order procedures!</h2>
+                    <p>Contact us and we'll get back to you as soon as possible.</p>
+                </div>
+
+                <a class="btn btn-primary transition-3d-hover" href="#">Submit a Request</a>
+            </div>
+        </div>*@
+    </div>
+<br />
+<div class="container space-2">
+
+
+    <hr class="my-7">
+
+    <!-- Title -->
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8 mb-3 mb-md-0">
+            <h2 class="h5 mb-0">Suggested referrals</h2>
+            <p class="mb-0">We think these friends would offer great opportunities.</p>
+        </div>
+        <div class="col-md-4 text-md-right">
+            <a class="btn btn-sm btn-soft-primary transition-3d-hover" href="#">Show More Suggestions</a>
+        </div>
+    </div>
+    <!-- End Title -->
+
+    <div class="card-deck d-block d-lg-flex card-lg-gutters-2">
+        <!-- Friends List -->
+        <a class="card card-frame mb-3" href="#">
+            <div class="card-body">
+                <div class="media">
+                    <div class="u-avatar mr-3">
+                        <img class="img-fluid rounded-circle" src="../../assets/img/100x100/img9.jpg" alt="Image Description">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="h6 text-dark mb-0">Patrick Garner</h4>
+                        <span>Refer</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- End Friends List -->
+        <!-- Friends List -->
+        <a class="card card-frame mb-3" href="#">
+            <div class="card-body">
+                <div class="media">
+                    <span class="btn btn-icon btn-soft-primary rounded-circle mr-3">
+                        <span class="btn-icon__inner">CB</span>
+                    </span>
+                    <div class="media-body">
+                        <h4 class="h6 text-dark mb-0">Cameron Brown</h4>
+                        <span>Refer</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- End Friends List -->
+        <!-- Friends List -->
+        <a class="card card-frame mb-3" href="#">
+            <div class="card-body">
+                <div class="media">
+                    <div class="u-avatar mr-3">
+                        <img class="img-fluid rounded-circle" src="../../assets/img/100x100/img8.jpg" alt="Image Description">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="h6 text-dark mb-0">Sebastian Diaz</h4>
+                        <span>Refer</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- End Friends List -->
+    </div>
+
+    <div class="card-deck d-block d-lg-flex card-lg-gutters-2">
+        <!-- Friends List -->
+        <a class="card card-frame mb-3" href="#">
+            <div class="card-body">
+                <div class="media">
+                    <span class="btn btn-icon btn-soft-danger rounded-circle mr-3">
+                        <span class="btn-icon__inner">JM</span>
+                    </span>
+                    <div class="media-body">
+                        <h4 class="h6 text-dark mb-0">Joseph Mack</h4>
+                        <span>Refer</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- End Friends List -->
+        <!-- Friends List -->
+        <a class="card card-frame mb-3" href="#">
+            <div class="card-body">
+                <div class="media">
+                    <div class="u-avatar mr-3">
+                        <img class="img-fluid rounded-circle" src="../../assets/img/100x100/img11.jpg" alt="Image Description">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="h6 text-dark mb-0">Cler Lockhart</h4>
+                        <span>Refer</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- End Friends List -->
+        <!-- Friends List -->
+        <a class="card card-frame mb-3" href="#">
+            <div class="card-body">
+                <div class="media">
+                    <div class="u-avatar mr-3">
+                        <img class="img-fluid rounded-circle" src="../../assets/img/100x100/img9.jpg" alt="Image Description">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="h6 text-dark mb-0">Sean Lewis</h4>
+                        <span>Refer</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- End Friends List -->
+    </div>
+
+    <div class="card-deck d-block d-lg-flex card-lg-gutters-2">
+        <!-- Friends List -->
+        <a class="card card-frame mb-3" href="#">
+            <div class="card-body">
+                <div class="media">
+                    <div class="u-avatar mr-3">
+                        <img class="img-fluid rounded-circle" src="../../assets/img/100x100/img10.jpg" alt="Image Description">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="h6 text-dark mb-0">Eliza Donovan</h4>
+                        <span>Refer</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- End Friends List -->
+        <!-- Friends List -->
+        <a class="card card-frame mb-3" href="#">
+            <div class="card-body">
+                <div class="media">
+                    <span class="btn btn-icon btn-soft-success rounded-circle mr-3">
+                        <span class="btn-icon__inner">JC</span>
+                    </span>
+                    <div class="media-body">
+                        <h4 class="h6 text-dark mb-0">James Collins</h4>
+                        <span>Refer</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- End Friends List -->
+        <!-- Friends List -->
+        <a class="card card-frame mb-3" href="#">
+            <div class="card-body">
+                <div class="media">
+                    <div class="u-avatar mr-3">
+                        <img class="img-fluid rounded-circle" src="../../assets/img/100x100/img2.jpg" alt="Image Description">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="h6 text-dark mb-0">Amanta Owens</h4>
+                        <span>Refer</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- End Friends List -->
+    </div>
+
+    <hr class="my-7">
+</div>
+<!-- Apply For Job Section -->
+<div id="applyForJob" class="container space-2">
+    <div class="card shadow-sm py-10 px-7">
+        <!-- Title -->
+        <div class="text-center mb-7">
+            <span class="btn btn-xs btn-soft-success btn-pill mb-2">Join Front</span>
+            <h2 class="h3 font-weight-normal">Apply for this Job</h2>
+        </div>
+        <!-- End Title -->
+        <!-- Apply Form -->
+        <form class="js-validate">
+            <div class="row">
+                <div class="col-md-6 mb-5">
+                    <!-- Input -->
+                    <div class="js-form-message">
+                        <label class="form-label" for="fullNameLabel">Full name <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="firstName" id="fullNameLabel" placeholder="First Name" aria-label="First Name" required
+                                   data-msg="Please enter your frist name."
+                                   data-error-class="u-has-error"
+                                   data-success-class="u-has-success">
+                        </div>
+                    </div>
+                    <!-- End Input -->
+                </div>
+
+                <div class="col-md-6 mb-5">
+                    <!-- Input -->
+                    <div class="js-form-message">
+                        <label class="form-label" for="lastNameLabel">Last name <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="lastName" id="lastNameLabel" placeholder="Last Name" aria-label="Last Name" required
+                                   data-msg="Please enter your last name."
+                                   data-error-class="u-has-error"
+                                   data-success-class="u-has-success">
+                        </div>
+                    </div>
+                    <!-- End Input -->
+                </div>
+
+                <div class="col-md-6 mb-5">
+                    <!-- Input -->
+                    <div class="js-form-message">
+                        <label class="form-label" for="emailAddressLabel">Email <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="email" class="form-control" name="emailAddress" id="emailAddressLabel" placeholder="Email" aria-label="Email" required
+                                   data-msg="Please enter a valid email address."
+                                   data-error-class="u-has-error"
+                                   data-success-class="u-has-success">
+                        </div>
+                    </div>
+                    <!-- End Input -->
+                </div>
+
+                <div class="col-md-6 mb-5">
+                    <!-- Input -->
+                    <div class="js-form-message">
+                        <label class="form-label" for="urlLabel">URL</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="URL" id="urlLabel" placeholder="Linkedin" aria-label="Linkedin">
+                        </div>
+                    </div>
+                    <!-- End Input -->
+                </div>
+
+
+                <div class="col-sm-6 mb-6">
+                    <!-- Datepicker -->
+                    <label class="form-label">From</label>
+
+                    <div id="datepickerWrapperFrom" class="js-focus-state u-datepicker input-group">
+                        <div class="input-group-prepend">
+                            <span id="calendarFromLabel" class="input-group-text">
+                                <span class="fas fa-calendar"></span>
+                            </span>
+                        </div>
+                        <input class="js-range-datepicker form-control bg-white rounded-right" type="text" placeholder="From" aria-label="From" aria-describedby="calendarFromLabel"
+                               data-rp-wrapper="#datepickerWrapperFrom"
+                               data-rp-date-format="d/m/Y">
+                    </div>
+                    <!-- End Datepicker -->
+                </div>
+
+                <div class="col-sm-6 mb-6">
+                    <!-- Datepicker -->
+                    <label class="form-label">To</label>
+
+                    <div id="datepickerWrapperTo" class="js-focus-state u-datepicker input-group">
+                        <div class="input-group-prepend">
+                            <span id="calendarToLabel" class="input-group-text">
+                                <span class="fas fa-calendar"></span>
+                            </span>
+                        </div>
+                        <input class="js-range-datepicker form-control bg-white rounded-right" type="text" placeholder="To" aria-label="To" aria-describedby="calendarToLabel"
+                               data-rp-wrapper="#datepickerWrapperTo"
+                               data-rp-date-format="d/m/Y">
+                    </div>
+                    <!-- End Datepicker -->
+                </div>
+
+
+                <div class="col-md-12 mb-5">
+                    <!-- Input -->
+                    <div class="js-form-message">
+                        <label class="form-label">In a few words... <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <textarea class="form-control" rows="6" name="answer" placeholder="How'd you hear about Front?" aria-label="How'd you hear about Front?" required
+                                      data-msg="Please enter an answer."
+                                      data-error-class="u-has-error"
+                                      data-success-class="u-has-success"></textarea>
+                        </div>
+                    </div>
+                    <!-- End Input -->
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary transition-3d-hover">Submit Application</button>
+            </div>
+        </form>
+        <!-- End Apply Form -->
+    </div>
+</div>
+<!-- End Apply For Job Section -->
+
+<div class="wrapper">
+    <section class="createevent">
+        <EditForm EditContext="@_editContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <p>
+                    <label>
+                        Date:
+                    </label>
+                    <input id="txtDate" type="date" required @bind-value="_timeSample.date" />
+                    <ValidationMessage For="@(() => _timeSample.date)" />
+                </p>
+            </div>
+            <div class="form-group">
+                <p>
+                    <label>
+                        Time:
+                    </label>
+                    <input id="txtTime" type="time" required @bind="_timeSample.time" />
+                    <ValidationMessage For="@(() => _timeSample.time)" />
+                </p>
+            </div>
+            <div class="form-group">
+                <p>
+                    <label>
+                        Time2:
+                    </label>
+                    <InputText id="txtTime2" type="time" required @bind-Value="_timeSample.text" />
+                    <ValidationMessage For="@(() => _timeSample.text)" />
+                </p>
+            </div>
+        </EditForm>
+    </section>
+</div>
+
+
+
+@code {
+
+    public class TimeSample
+    {
+        public DateTime date { get; set; }
+        public DateTime time { get; set; }
+        public string text { get; set; }
+    };
+
+    private EditContext _editContext;
+    private TimeSample _timeSample = new TimeSample();
+
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(_timeSample);
+    }
+
+    private void HandleValidSubmit()
+    {
+    }
+
+    protected void HandleInvalidSubmit()
+    {
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

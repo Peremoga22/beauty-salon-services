@@ -1,0 +1,71 @@
+﻿@page "/admin-contact-us-icons"
+@layout AdminLayout
+@inject NavigationManager NavigationManager
+@inject ContactUsIconService ContactUsIconService
+@inject IJSRuntime JSRuntime
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-no-gutter mb-3 m-md-3">
+        <li class="breadcrumb-item active" aria-current="page">Contact Us Icons</li>
+    </ol>
+</nav>
+<div>
+    <div class="text-left m-1">
+        <NavLink class="btn btn-primary mb-1" href="/edit-contact-us-icons">&nbsp;+&nbsp;</NavLink>
+    </div>
+</div>
+<div class="table-responsive-md u-datatable  shadow-primary-lg p-3 mb-5 rounded">
+    <table class="js-datatable table table-borderless u-datatable__striped u-datatable__content">
+        <thead>
+            <tr class="text-uppercase font-size-1 row">
+                <th scope="col" class="font-weight-medium col-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                        Icons
+                        <div class="ml-2">
+                        </div>
+                    </div>
+                </th>    
+            </tr>
+        </thead>
+        @foreach (var item in icons)
+        {
+            <tbody class="font-size-1">
+
+                <tr class="row">
+                    <td class="col-1" @onclick="(() => EditAdmin(item.Id))">
+                        <a class="btn btn-icon btn-soft-dark btn-bg-transparent rounded-circle">
+                            <img src="data:image/svg+xml;base64, @item.Icon" class="js-svg-injector" style="height:60px;width:60px;" alt="" />
+                        </a>
+
+                    </td>
+                    <td class="mt-auto mb-auto  font-weight-normal col-2" @onclick="(() => EditAdmin(item.Id))"></td>
+
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>
+
+
+@code {
+    protected ContactUsIcon model = new ContactUsIcon();
+    protected IEnumerable<ContactUsIcon> icons = new List<ContactUsIcon>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        icons = await ContactUsIconService.GetAllListAsync();
+        this.StateHasChanged();
+    }
+    protected void EditAdmin(int id)
+    {
+        NavigationManager.NavigateTo("/edit-contact-us-icons/" + id);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("loadScripts");
+        }
+    }
+}

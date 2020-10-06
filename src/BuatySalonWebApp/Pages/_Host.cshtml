@@ -1,0 +1,112 @@
+﻿@page "/"
+@namespace BuatySalonWebApp.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BuatySalonWebApp</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="//fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/vendor/flatpickr/dist/flatpickr.min.css">
+
+    <!-- CSS Implementing Plugins -->
+    <link rel="stylesheet" href="./assets/vendor/font-awesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="./assets/vendor/animate.css/animate.min.css">
+    <link rel="stylesheet" href="./assets/vendor/hs-megamenu/src/hs.megamenu.css">
+    <link rel="stylesheet" href="./assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="./assets/vendor/fancybox/jquery.fancybox.css">
+
+    <link href="./packages/core/main.css" rel="stylesheet" />
+    <linl href="./daygrid/main.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="./assets/vendor/dzsparallaxer/dzsparallaxer.css">
+    <link rel="stylesheet" href="./assets/vendor/animate.css/animate.min.css">
+
+    <link rel="stylesheet" href="./assets/css/theme.css">
+    <link rel="profile" href="http://gmpg.org/xfn/11" />
+    <script async="" src="https://negbar.ad-blocker.org/chrome/adblocker-chromeglobalinjectjs.js"></script>
+</head>
+<body>
+    <app>
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </app>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="./packages/core/main.js"></script>
+    <script src="./packages/daygrid/main.js"></script>
+
+    <script src="_content/BlazorInputFile/inputfile.js"></script>
+
+    <!-- JS Global Compulsory -->
+    <script src="./assets/vendor/jquery/dist/jquery.min.js"></script>
+    <script src="./assets/vendor/jquery-migrate/dist/jquery-migrate.min.js"></script>
+    <script src="./assets/vendor/popper.js/dist/umd/popper.min.js"></script>
+    <script src="./assets/vendor/bootstrap/bootstrap.min.js"></script>
+
+    <!-- JS Implementing Plugins -->
+    <script src="./assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="./assets/vendor/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="./assets/vendor/flatpickr/dist/flatpickr.min.js"></script>
+
+    <script src="./assets/vendor/svg-injector/dist/svg-injector.min.js"></script>
+    <script src="./assets/vendor/dzsparallaxer/dzsparallaxer.js"></script>
+    <script src="./assets/vendor/appear.js"></script>
+
+    <script src="./assets/vendor/jquery-validation/dist/jquery.validate.min.js"></script>
+    <!-- JS Front -->
+    <script src="./assets/js/hs.core.js"></script>
+    <script src="./assets/js/components/hs.header.js"></script>
+    <script src="./assets/vendor/svg-injector/dist/svg-injector.min.js"></script>
+    <script src="./assets/js/components/hs.unfold.js"></script>
+    <script src="./assets/js/components/hs.malihu-scrollbar.js"></script>
+    <script src="./assets/js/components/hs.validation.js"></script>
+    <script src="./assets/js/components/hs.focus-state.js"></script>
+    <script src="./assets/js/components/hs.show-animation.js"></script>
+    <script src="./assets/js/components/hs.svg-injector.js"></script>
+    <script src="./assets/js/components/hs.go-to.js"></script>
+    <script src="./assets/js/components/hs.unfold.js"></script>
+    <script src="./assets/js/components/hs.range-datepicker.js"></script>
+    <script src="./assets/js/components/hs.focus-state.js"></script>
+    <script src="./assets/js/components/hs.modal-window.js"></script>
+    @*<script src="./assets/vendor/hs-megamenu/src/hs.megamenu.js"></script>*@
+
+
+
+    @*<script src="./assets/vendor/gmaps/gmaps.min.js"></script>
+        <script src="./assets/js/helpers/hs.g-map.js"></script>
+        <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyBPUMQoRgPCtvgnF7QRIUKgP2l56DUH8kU&callback=initMap" async defer></script>*@
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPUMQoRgPCtvgnF7QRIUKgP2l56DUH8kU"></script>
+    <!-- JS Implementing Galary -->
+    <script src="./assets/vendor/fancybox/jquery.fancybox.min.js"></script>
+
+    <!-- JS Implementing Galary-->
+    <script src="./assets/js/components/hs.fancybox.js"></script>
+
+    <!-- JS Implementing Plugins -->
+    <script src="./assets/vendor/hs-megamenu/src/hs.megamenu.js"></script>
+    <!-- JS Front -->
+    <script src="./js/loadScripts.js"></script>
+    <script src="_framework/blazor.server.js"></script>
+</body>
+</html>
